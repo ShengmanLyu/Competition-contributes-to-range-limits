@@ -16,6 +16,15 @@
 #  - coexistence analyses: coexistence outcomes, niche differences, relative fitness differences
 #  - statistical analyses: different types of confidence intervals
 
+
+#************************************************************
+# ****** Load R packages ******----
+#************************************************************
+library(MuMIn)
+library(car)
+library(ggplot2)
+library(Matrix)
+
 #************************************************************
 # ****** Functions for vital rate model diagnostics ******----
 # codes are adapted from Ellner et al. (2016). Data-Driven Modelling of Structured Populations : A Practical Guide to the Integral Projection Model. Cham : Springer.
@@ -132,8 +141,7 @@ linearity.lm <- function(x, y, data) {
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Linearity----
-# To calculate the AICc of glm, glm with a quadratic term and gam models
-# Similar AICc indicate linear relationships 
+# To compare the AICc of glm, glm with a quadratic term and gam models
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 linearity.glm <- function(x, y, data) {
   # x: size t as character
@@ -150,7 +158,6 @@ linearity.glm <- function(x, y, data) {
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Normality----
-# "Residuals should be Gaussian."
 # Not applicable to glm
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 normality.lm <- function(x, y, data) {
@@ -166,7 +173,6 @@ normality.lm <- function(x, y, data) {
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Constant variance ----
-# "Residuals should have constant variance."
 # Not applicable to glm
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 constant.var.lm <- function(x, y, data) {
@@ -187,7 +193,7 @@ constant.var.lm <- function(x, y, data) {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # function to compare candidate models of lm (family = gaussian) and glm
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-library(MuMIn)
+
 modelcmp.glm <- function(data, response, candidate, ...) {
   # data
   # response: response variable as a character, e.g. "survival"
@@ -257,18 +263,6 @@ growth.z1z <- function(z1,z, params) {
   # return probability density
   return(pd)
 }
-
-# a. build a regression on the residuals of the growth regression as a function of size. to build the regression, you can adopt the code from section C.2 for the growth function. instead of using d$sizeNext as the response variable, you'll use the absolute value of the residuals as the response variable in the regression, which can be accessed with abs(resid(growth.reg)). to access the sizes that were used in the growth.reg regression, use growth.reg$model$size (since some size values were NA, this grabs just the rows used in the regression). check that the slope is positive.
-#growth.sd.reg=lm(abs(resid(growth.reg))~growth.reg$model$size) # Why residuals are sd of size? should be sqrt(pi/2)*abs(residuals)?
-#summary(growth.sd.reg)
-# b. modify the params data frame (where we store all the coefficients used to build the ipm) to have coefficients called growth.sd.int and growth.sd.slope and set the values of those coefficients equal to the appropriate coefficients from part a.
-#params$growth.sd.int=coefficients(growth.sd.reg)[1]
-#params$growth.sd.slope=coefficients(growth.sd.reg)[2]
-#c. modify the growth function, g.xy, to allow the standard deviation argument, sd, to be a function of size. this will follow a similar pattern to the argument for mean. it's probably easiest not to rename the function g.yx, otherwise you'll have modify the code in section D.2. 
-#g.yx=function(xp,x,params) { 			
-#  dnorm(xp,mean=params$growth.int+params$growth.slope*x, sd=sqrt(pi/2)*(params$growth.sd.int+params$growth.sd.slope*x))
-#}#d. run the code from sections D and E to obtain lambda.
-#1.014439 # old value was 1.013391
 
 # 2. growth function (ceiling)
 growth.z1z_ceiling <- function(z1,z, params) {
@@ -427,7 +421,7 @@ plot.kernel <- function(x,y,k,... ) {
 }
 
 #************************************************************
-# ****** Functions for basic analyses for IPMs ******----
+# ****** Functions for basic analyses of IPMs ******----
 #************************************************************
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -719,7 +713,7 @@ eviction_delta.lambda = function(growthKernel = NA, kernel = NA, survivalFunctio
 #************************************************************
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform matrix-level sensitivity, elasticity analysis ----
+# Function to perform matrix-level sensitivity, elasticity analyses ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 elasticity.k <- function(k) {
   # k: full kernel of an IPM
@@ -743,7 +737,7 @@ elasticity.k <- function(k) {
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform vital rate-level sensitivity, elasticity analysis ----
+# Function to perform vital rate-level sensitivity, elasticity analyses ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 elasticity.vr <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
   # params: paramters of vital rates in an IPM
@@ -783,7 +777,7 @@ elasticity.vr <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform parameter-level sensitivity, elasticity analysis ----
+# Function to perform parameter-level sensitivity, elasticity analyses ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 elasticity.par <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
   # params: paramters of vital rates in an IPM
@@ -823,7 +817,7 @@ elasticity.par <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform LTRE analysis on IPMs ----
+# Function to perform life-table response experiment, LTRE ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ltre <- function(vital.rate, params.ctl, lambda.ctl, params.trt, lambda.trt, params.ref, lambda.ref, sensitivity.ref=NA, ...) {
   # params.ctl: vital rates of control IPM (only one as reference level)
@@ -863,7 +857,7 @@ ltre <- function(vital.rate, params.ctl, lambda.ctl, params.trt, lambda.trt, par
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to standardise relaitve contribution of vital rates ----
+# Function to standardise contributions of vital rates ----
 # This standardisation makes relative contribution compaable across species
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ltre.standardise <- function(x) {
@@ -912,16 +906,6 @@ sensitivity.igr <- function(pgr.intrinsic, pgr.invasion) {
   # output
   return(sens)
 }
-
-# when intrinic > 0
-intrinsic = exp(0.5)
-invasion = exp(0.5 + seq(-0.8, 0.8, length.out = 10))
-sensitivity.igr(pgr.intrinsic = intrinsic, pgr.invasion = invasion)
-
-# when intrinic < 0
-intrinsic = exp(-0.5)
-invasion = exp(-0.5 + seq(-0.8, 0.8, length.out = 10))
-sensitivity.igr(pgr.intrinsic = intrinsic, pgr.invasion = invasion)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Function to calculate sensitivity and coexistence outcome using invasion growth rate ----
@@ -1013,15 +997,9 @@ coex.ndfd <- function(s12, s21) {
   return(list(ndfd = c(nd, rfd, coex.metric), outcome = outcome, winner = winner, superior = superior) )
 }
 
-# test
-coex.ndfd(0.6,2)
-coex.ndfd(2, 0.6)
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Function to plot ND, FD and coexistence outcome ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-library(ggplot2)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Plot ND and RFD (log-scale) frame indicating coexistence outcomes
@@ -1035,7 +1013,6 @@ coex.frame <- function(x1=-0.5,x2=0.9) {
     geom_line(data=data.frame(x=x, y=rep(0,length(x))), aes(x=x, y=y), inherit.aes = FALSE, linetype="dashed")
   return(p)
 }
-coex.frame()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # add frame
@@ -1045,11 +1022,10 @@ frame.coex = function(x1 = -0.01, x2= 0.91) {
   y <- log(1/(1-x))
   return(data.frame(x=x,y=y))
 }
-frame.coex()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # add polygan
-# polygan of coexistence area
+# polygan of coexistence
 polygan.coex = function(x1 = 0.0001, x2= 0.91) {
   xx1 = seq(x1,x2, length.out = 100)
   xx2 = rep(x2,100)
@@ -1061,6 +1037,8 @@ polygan.coex = function(x1 = 0.0001, x2= 0.91) {
 ggplot(polygan.coex(), aes(x=x,y=y)) +
   geom_polygon()
 
+ #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# polygan of priority effects
 polygan.prio = function(x1 = -3, x2= -0.001) {
   xx1 = seq(x1,x2, length.out = 100)
   xx2 = rep(-0.001,100)
@@ -1069,17 +1047,6 @@ polygan.prio = function(x1 = -3, x2= -0.001) {
   yy <- c(log(1/(1-xx1)), log(1/(1-xx2)),-log(1/(1-xx3)))
   return(data.frame(x=xx,y=yy))
 }
-ggplot(polygan.prio(), aes(x=x,y=y)) +
-  geom_polygon()
-
-frame.coex = function(x1 = -0.01, x2= 0.91) {
-  # x1, x2 lower and upper limits of ND, in which x1 < -0.001
-  x <- c(seq(x1,-0.001, length.out = 100), seq(0.001,x2,length.out = 100))
-  y <- log(1/(1-x))
-  return(data.frame(x=x,y=y))
-}
-frame.coex()
-
 
 #************************************************************
 # ****** Functions for statistical analyses ******----
@@ -1088,12 +1055,10 @@ frame.coex()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Function to extrac statics from lmer ----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-library(car)
 coef.lmer <- function(model, ...) {
   fit <- Anova(model, ...)
   return(as.data.frame(fit))
 }
-
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Function to compuate confidence interval using linear model ----
