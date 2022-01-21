@@ -1,7 +1,7 @@
 ## R scripts used for modelling and statistical analyses in the manuscript "Competition contributes to both warm and cool range edges"
 ### The data used for analyses can be found on Dryad.
 ### This repository includes ## R files.
-### sessionInfo()
+### R sessionInfo()
 R version 4.0.3 (2020-10-10)
 Platform: x86_64-apple-darwin17.0 (64-bit)
 Running under: macOS Big Sur 10.16
