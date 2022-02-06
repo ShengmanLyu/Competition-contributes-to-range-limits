@@ -1,7 +1,6 @@
 ## R scripts used for modelling and statistical analyses in the manuscript "Competition contributes to both warm and cool range edges"
 ### The data used for analyses can be found on Figshare: https://figshare.com/s/cb9e034633f47739466b
-
-### This repository includes ## R files.
+### This repository includes two R files.
 ### R sessionInfo()
 R version 4.0.3 (2020-10-10)
 Platform: x86_64-apple-darwin17.0 (64-bit)
