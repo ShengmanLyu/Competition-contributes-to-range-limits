@@ -23,10 +23,10 @@ rm(list=ls())
 
 # ** - 1.0 read data---------------------------------------
 # load functions
-source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
+source("NICH_coexistence_IPM_functions.R")
 
 # NICH data
-d <- read_excel("/Users/slyu/LVSM/NICH/Data/Biomass/data_181920_v6.xlsx", na="NA",col_names = TRUE)
+d <- read_excel("data_181920_v6.xlsx", na="NA",col_names = TRUE)
 d
 # remove seedling planted in autumn 2019 because mostly of them died: 16755
 d <- d %>% filter(!(!is.na(note.size.autumn0) & note.size.autumn0 == "planting.autumn0" & year == 2020))
@@ -41,8 +41,7 @@ fig.size0 <- d %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
   mutate(background.species = factor(background.species, levels = c("Anal","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Melu", "Plla", "Potr", "Sapr", "none"))) %>%  
-  ggplot(aes(x=size.autumn0)) +
-  #ggplot(aes(x=log(size.autumn0))) +
+  ggplot(aes(x=log(size.autumn0))) +
   geom_histogram() +
   facet_wrap(~focal.species, nrow=2, scales = "free") +
   scale_x_continuous(name = "log(Size at year t)") + 
@@ -58,10 +57,8 @@ fig.size1 <- d %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
   mutate(background.species = factor(background.species, levels = c("Anal","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Melu", "Plla", "Potr", "Sapr", "none"))) %>%  
-  #ggplot(aes(x=size.autumn1)) +
   ggplot(aes(x=log(size.autumn1))) +
   geom_histogram() +
-  #geom_density() +
   facet_wrap(~focal.species, nrow=2, scales = "free") +
   scale_x_continuous(name = "log(Size at year t + 1)") + 
   scale_y_continuous(name="Count")
@@ -75,11 +72,8 @@ fig.growth <- d %>%
   filter(!(focal.species %in% c("Anvu", "Trca"))) %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
-  #ggplot(aes(x=size.autumn0, y = size.autumn1, col = background.species, shape = site, linetype=site)) +
   ggplot(aes(x=log(size.autumn0), y = log(size.autumn1), col=site)) +
   geom_point() +
-  #geom_smooth(method = "lm") +
-  #geom_smooth(method = "lm", formula = "y ~x+I(x^2)") +
   geom_rug(sides = "b", col="grey50") +
   facet_wrap(~focal.species, nrow=2, scales = "free") +
   scale_x_continuous(name = "log(Size at year t)") +
@@ -87,7 +81,6 @@ fig.growth <- d %>%
 fig.growth
 
 # plot
-#pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/Model diagnostic/diag.growth_nonlog.pdf", width=6, height = 5)
 for(fc in c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr")) {
   # fc = "Sapr"
   d %>%
@@ -97,10 +90,8 @@ for(fc in c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi"
     filter(!(background.species %in% c("Anvu", "Trca"))) %>%
     #filter(background.species != "none") %>%
     filter(focal.species == fc) %>%
-    #plot.diag.lm("size.autumn0", "size.autumn1", data=., fc)
     plot.diag.lm("log(size.autumn0)"," log(size.autumn1)",data=., fc)
 }
-#dev.off()
 
 # linearity
 linearity.gro <- d %>%
@@ -163,11 +154,8 @@ fig.fecundity <- d %>%
   filter(!(focal.species %in% c("Anvu", "Trca"))) %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
-  #ggplot(aes(x=size.autumn0, y = size.autumn1, col = background.species, shape = site, linetype=site)) +
   ggplot(aes(x=log(size.autumn0), y = log(seeds.autumn0), col=site)) +
   geom_point() +
-  #geom_smooth(method = "lm") +
-  #geom_smooth(method = "lm", formula = "y ~x+I(x^2)") +
   geom_rug(sides = "b", col="grey50") +
   facet_wrap(~focal.species, nrow=2, scales = "free") +
   scale_x_continuous(name = "log(Size at year t)") +
@@ -175,7 +163,6 @@ fig.fecundity <- d %>%
 fig.fecundity
 
 # plot
-#pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/Model diagnostic/diag.fecundity.pdf", width=6, height = 5)
 for(fc in c("Anal","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr")) {
   #fc = "Anal"
   d %>%
@@ -233,7 +220,6 @@ cv.fec
 diag.fec <- cbind(linearity.fec, normality.fec, cv.fec)
 diag.fec$species = c("Anal", "Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr")
 diag.fec$vital.rate = "fecundity"
-# write.csv(rbind(diag.gro, diag.fec), "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/diag.gro.fec.csv")
 
 # ** - 1.5 survival -------------------------------------
 fig.survival <- d %>%
@@ -244,8 +230,7 @@ fig.survival <- d %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
   mutate(background.species = factor(background.species, levels = c("Anal","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Melu", "Plla", "Potr", "Sapr", "none"))) %>%  
-  ggplot(aes(x=size.autumn0, y = survival, col=site)) +
-  #ggplot(aes(x=log(size.autumn0), y = survival, col = site)) +
+  ggplot(aes(x=log(size.autumn0), y = survival, col = site)) +
   geom_jitter(height=0.1) +
   geom_rug(sides = "b", col="grey50") +
   facet_wrap(~focal.species, nrow=2, scales = "free") +
@@ -254,7 +239,6 @@ fig.survival <- d %>%
 fig.survival
 
 # plot
-#pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/Model diagnostic/diag.survival.pdf", width=5, height = 5)
 for(fc in c("Anal","Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr")) {
   #fc = "Armo"
   d %>%
@@ -292,7 +276,6 @@ fig.flowering <- d %>%
   filter(!(focal.species %in% c("Anvu", "Trca"))) %>%
   filter(!(background.species %in% c("Anvu", "Trca"))) %>%
   mutate(focal.species = factor(focal.species, levels = c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr"))) %>%  
-  #ggplot(aes(x=size.autumn0, y = flowering.autumn0, col = site)) +
   ggplot(aes(x=log(size.autumn0), y = flowering.autumn0, col = site)) +
   geom_jitter(height=0.1) +
   geom_rug(sides = "b", col="grey50") +
@@ -302,7 +285,6 @@ fig.flowering <- d %>%
 fig.flowering
 
 # plot
-#pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/Model diagnostic/diag.flowering.pdf", width=5, height = 5)
 for(fc in c("Anal", "Armo","Asal", "Plal", "Poal","Seca", "Trba", "Brer", "Crbi", "Daca", "Melu", "Plla", "Potr", "Sapr")) {
   # fc= "Armo"
   d %>%
@@ -341,18 +323,16 @@ linearity.flo$species = c("Anal","Armo", "Asal", "Plal", "Poal","Seca", "Trba", 
 linearity.flo$vital.rate = "flowering"
 linearity.flo
 
-# write.csv(rbind(linearity.sur, linearity.flo), "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/diag.sur.flo.csv")
-
 #****************************************************************************
 # 2. Vital rates model selection ------
 #****************************************************************************
 # rm(list=ls())
 
 # load functions
-source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
+source("NICH_coexistence_IPM_functions.R")
 
 # raw data: 17679
-d <- read_excel("/Users/slyu/LVSM/NICH/Data/Biomass/data_181920_v6.xlsx", na="NA",col_names = TRUE)
+d <- read_excel("data_181920_v6.xlsx", na="NA",col_names = TRUE)
 d 
 # remove seedling planted in autumn 2019 because mostly of them died: 16755
 d <- d %>% filter(!(!is.na(note.size.autumn0) & note.size.autumn0 == "planting.autumn0" & year == 2020))
@@ -389,25 +369,7 @@ models.size <- c("1",
                  "size.autumn0 + site*background.species",
                  "size.autumn0 * site * background.species")
 
-# function to select pairs 
-sample.pair <- function(data, n=1) {
-  bg.lp <- names(table(data[,c("background.species", "site")])[,1])[table(data[,c("background.species", "site")])[,1]>n]
-  bg.sl <- names(table(data[,c("background.species", "site")])[,1])[table(data[,c("background.species", "site")])[,2]>n]
-  bg.az <- names(table(data[,c("background.species", "site")])[,1])[table(data[,c("background.species", "site")])[,3]>n]
-  
-  out <- filter(data, 
-                site == "Les Posses" & background.species %in% bg.lp | 
-                  site == "Solalex" & background.species %in% bg.sl |
-                  site == "Anzeindaz" & background.species %in% bg.az)
-  return(out)
-}
-
-## Include competition-only focals
-# d <- filter(d, background.species != "none")
-d
-
 aic <- aic.best <- NULL
-
 for(fc in sps[1:14]) {
   #fc <- "Sapr"
   
@@ -538,11 +500,11 @@ aic.best
 # ** - 2.9. Germination using FuNiche data ------
 # Les Posses: 4; Solalex: 13; Anzeindaz: 19
 #****************************************************************************
-seeds <- read_excel("/Users/slyu/LVSM/NICH/Data/germination/FunNiche/FunNiche Seed Counts.xlsx")
+seeds <- read_excel("FunNiche Seed Counts.xlsx")
 seeds
 colnames(seeds) <- c("rep","Plal", "Poal", "Anal", "Trba", "Seca", "Asal", "Armo", "Plla", "Brer", "Melu", "Trca", "Crbi", "Potr", "Sapr")
 
-funiche <- read_excel("/Users/slyu/LVSM/NICH/Data/germination/FunNiche/FunNiche_data_2019_2020_dec2020.xlsx", na="NA")
+funiche <- read_excel("FunNiche_data_2019_2020_dec2020.xlsx", na="NA")
 funiche
 
 # make sps names consistent
@@ -635,9 +597,8 @@ model.site <-  c("1", "site")
 funiche %>%
   filter(species %in% sps) %>%
   #mutate(germination_spring_19 = ifelse(germination_spring_19 == 0, 0.001, ) 
-  #filter(site %in% c("4","13","19")) %>%
+  filter(site %in% c("4","13","19")) %>%
   ggplot(aes(x=germination_spring_19)) +
-  #ggplot(aes(x=log(germination_spring_19))) +
   geom_histogram() +
   facet_wrap(~species)
 
@@ -683,9 +644,6 @@ aic.est.best
 aic.funiche <- bind_rows(aic.ger, aic.est)
 aic.best.funiche <- bind_rows(aic.ger.best, aic.est.best)
 
-#write.csv(rbind(aic, aic.funiche), "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/aic_20220114.csv")
-#write.csv(rbind(aic.best, aic.best.funiche), "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/aic.best_20220114.csv")
-
 #****************************************************************************
 # 3. Vital rates estimation ------
 #****************************************************************************
@@ -697,10 +655,10 @@ aic.best.funiche <- bind_rows(aic.ger.best, aic.est.best)
 rm(list=ls())
 # NICH data
 # load functions
-source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
+source("NICH_coexistence_IPM_functions.R")
 
 # raw data: 17679
-d <- read_excel("/Users/slyu/LVSM/NICH/Data/Biomass/data_181920_v6.xlsx", na="NA",col_names = TRUE)
+d <- read_excel("data_181920_v6.xlsx", na="NA",col_names = TRUE)
 d 
 # remove seedling planted in autumn 2019 because mostly of them died
 # 16755
@@ -720,7 +678,7 @@ d$background.species <- factor(d$background.species)
 d
 
 # FuNiche data for germination and establishment
-funiche <- read_csv("/Users/slyu/LVSM/NICH/Data/germination/FunNiche/FunNiche_data_2019_2020_dec2020_20210114.csv")
+funiche <- read_csv("FunNiche_data_2019_2020_dec2020_20210114.csv")
 f <- filter(funiche, site %in% c(4,13,19))
 f$site <- as.character(f$site)
 f$site <- dplyr::recode(f$site, "4" = "Les Posses", "13" = "Solalex", "19"="Anzeindaz")
@@ -729,13 +687,13 @@ f$site <- factor(f$site)
 f
 
 # biomass of greenhouse seedling
-g <- read_excel("/Users/slyu/LVSM/NICH/Data/Biomass/focal biomass/biomass data for correlation_2020.xlsx",na="NA", col_names = TRUE)
+g <- read_excel("biomass data for correlation_2020.xlsx",na="NA", col_names = TRUE)
 g$greenhouse <- ifelse(g$site == "greenhouse" | g$site == "chngreenhouse", "yes", "no")
 g$flowering <- ifelse(g$stem.number == 0, "no", "yes")
 g
 
 # vital rates
-vr <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/vital.rates.xlsx", col_names = TRUE, na="NA")
+vr <- read_excel("vital.rates.xlsx", col_names = TRUE, na="NA")
 vr <- vr[-1,]
 vr
 
@@ -744,7 +702,7 @@ nboot=999
 vr.boot <- array(NA, dim = c(nrow(vr), ncol(vr), nboot))
 
 # best vital rate models
-vr.models <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/model selection/model selection.xlsx", na="NA") # best.model_20210105
+vr.models <- read_excel("model selection.xlsx", na="NA") # best.model_20210105
 vr.models
 table(vr.models$response)
 
@@ -756,9 +714,6 @@ sps
 
 for(n in 1:nrow(vr)) {
   # n = 1
-  # fc = "Anal"
-  # bg = "Brer"
-  # st = "Les Posses"
   vi <- vr[n,]
   fc <- as.character(vi$focal.species)
   bg <- as.character(vi$background.species)
@@ -1153,8 +1108,6 @@ for(n in 1:nrow(vr)) {
 # ** - 3.2 Species and site level vital rates ------
 #****************************************************************************
 for(n in 1:nrow(vr)) {
-  # n = 700
-  # fc = "Anal"
   vi <- vr[n,]
   fc <- as.character(vi$focal.species)
   bg <- as.character(vi$background.species)
@@ -1375,8 +1328,6 @@ for(n in 1:nrow(vr)) {
   print("fecunidty")
   
   # **** - 3.2.5 germination ----------------------------------------------
-  #if(fc == "Seca") f.ger <- filter(f, species == fc & site %in% c("Solalex", "Anzeindaz"))
-  #else f.ger <- filter(f, species == fc)
   f.ger <- filter(f, species == fc)
   
   sample.size.pair <- table(f.ger[,"site"])[1]
@@ -1604,15 +1555,10 @@ for(i in 1:499) {
 }
 vr.bootstrap
 
-# write.csv(vr.bootstrap, "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/vr.bootstrap_20220121.csv")
-rm(vr.bootstrap)
 #****************************************************************************
 # ** - 3.4 Plot vital rates against raw data ** ------
 #****************************************************************************
 # **** - 3.4.0 make predictions -------------------------------------
-#vr <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/vital.rates.xlsx", na='NA')
-vr
-
 # vital rate paramters of all pairs
 vr.par <- vr %>% 
   filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
@@ -1639,8 +1585,6 @@ for(i in 1:nrow(vr.par)) {
   
   # growth
   growth.i <- growth.z(z=size.i, params = par.i)
-  #growth.i[growth.i > as.numeric(par.i$U)] = NA
-  #growth.i[growth.i < as.numeric(par.i$L)] = NA
   
   # flowering
   flowering.i <- flowering.z(z = size.i, params = par.i)
@@ -1873,15 +1817,7 @@ fig.establish.competition <- d %>%
   scale_x_discrete(name = "Site") +
   scale_y_continuous(name="Prob (Establishment under comp)")
 fig.establish.competition
-
-# pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/plots/Daca.pdf", width = 9, heigh=4)
-fig.survival
-fig.growth
-fig.flowering
-fig.fecundity
-fig.establish.competition
-# dev.off()
-
+ 
 #**************************************************
 # **** - 3.4.7 recruit size----
 vr.recruit <- filter(vr, background.species == "species")
@@ -1910,12 +1846,10 @@ fig.recruit <- g %>%
   scale_y_continuous(name="Density")
 fig.recruit
 
-# pdf("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital rate/plots/size-independent vital rates.pdf", width = 9, heigh=4)
 fig.germination
 fig.establish.fun
 fig.establish.competition
 fig.recruit
-# dev.off()
 fig.survival
 fig.growth
 fig.flowering
@@ -1942,7 +1876,6 @@ vr %>%
 # ** - 4.1 Size eviction ------
 #****************************************************************************
 # vital rates data
-vr <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/vital.rates.xlsx", na= "NA", col_names = TRUE)
 vr.eviction <- vr
 vr.eviction$p_eviction_recruit_lower = as.numeric(NA)
 vr.eviction$p_eviction_recruit_upper = as.numeric(NA)
@@ -2028,10 +1961,7 @@ for(a in 1:nrow(vr.eviction)) {
   # calculate population grwoth with and without ceiling
   lambda.delta.i <- eviction_delta.lambda_iter(growthKernel = growth.z1z, kernel = full.z1z, survivalFunction = survival.z,
                                                minsize = as.numeric(da$L), maxsize = da$U, params = da, n.big.matrix = 3000)
-  
-  #lambda.delta.i <- eviction_delta.lambda(growthKernel = growth.z1z, kernel = full.z1z, survivalFunction = survival.z,
-  #                                        minsize = as.numeric(da$L), maxsize = da$U, params = da, n.big.matrix = 3000)
-  
+    
   vr.eviction[a,"lambda"] <- lambda.delta.i$lambda
   vr.eviction[a,"lambda.ceiling"] <- lambda.delta.i$lambda2
   vr.eviction[a,"lambda.delta"] <- lambda.delta.i$dlambda
@@ -2117,7 +2047,6 @@ pgr.bootstrap
 #save.image("/Users/slyu/LVSM/NICH/Results/IPM_bootstrap/ipm_bootstrap_image_20210315.RData")
 #save(p, file="pgr_boot_20210315.R")
 
-
 #****************************************************************************
 # ** - 4.5 combine bootstrapped vital rates and lambdas ------
 #****************************************************************************
@@ -2142,8 +2071,6 @@ for(i in 1:nrow(vr.boot)) {
   }
 }
 
-# write.csv(vr.boot, "/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/lambda.bootstrap_20220130.csv")
-
 #****************************************************************************
 # 5. Bootstraped lambdas ------
 #****************************************************************************
@@ -2157,32 +2084,8 @@ rm(list=ls())
 source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
 
 # bootstraped lambdas 
-vr.boot <- read_csv("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/lambda.bootstrap_20220130.csv", na="NA", col_names = TRUE)
+vr.boot <- read_csv("SD2_lambda.only_bootstrap.csv", na="NA", col_names = TRUE)
 vr.boot
-
-#************************************************
-# how many IPMs in each bootstrap?
-vr.boot %>%
-  split(.$bootstrap) %>%
-  purrr::map(~!is.na(.$pgr)) %>%
-  purrr::map(sum)
-# all worked
-
-#************************************************
-# distribution of PGR
-# all PGR
-vr.boot %>%
-  #filter(pgr < 100) %>%
-  .$pgr %>%
-  #.$pgr %>% log() %>%
-  hist(breaks=100, labels=TRUE)
-
-#************************************************
-# is there any negative lambdas?
-# no negative lambdas
-vr.boot %>%
-  filter(pgr < 0) %>%
-  .$pgr
 
 #************************************************
 # is there any extremely big lambdas?
@@ -2196,40 +2099,6 @@ vr.boot %>%
   filter(pgr > 20 & !is.na(pgr)) %>%
   .$background.species %>% table()
   .[c("focal.species", "background.species", "site", "bootstrap", "pgr")]
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Brer: makes sense
-vr.boot %>%
-  filter(focal.species == "Brer" & background.species == "none" & site == "Les Posses") %>%
-  .$pgr %>% log() %>% hist
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Crbi in Brer
-# remove extreme values!
-# OR cerling 10;
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(background.species == "Brer") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Crbi in Crbi
-# remove/replace extreme values!
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(background.species == "Crbi") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-temp <- filter(vr.boot, focal.species == "Crbi" & background.species == "Crbi" & site == "Anzeindaz" & bootstrap %in% c(0))
-temp[par[1:6]] # very large survival intercept
-temp[par[7:13]] # very flowering intercept
-temp[par[14:16]] # very large fecundity intercept
 
 #************************************************
 # is there any extremely small lambdas?
@@ -2246,86 +2115,6 @@ vr.boot %>%
   filter(pgr< exp(-4) & !is.na(pgr)) %>%
   .$focal.species %>% table()
 .[c("focal.species", "background.species", "site", "bootstrap", "pgr")]
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Brer
-vr.boot %>%
-  filter(focal.species == "Brer") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  filter(pgr< 0.0001 & !is.na(pgr)) %>%
-  .$background.species %>% table()
-
-# Brer in Asal: set a floor or exclude: exp(-3)
-vr.boot %>%
-  filter(focal.species == "Brer") %>%
-  filter(background.species == "Asal") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-  
-# Brer in Crbi: set a floor or exclude, exp(-3)
-vr.boot %>%
-  filter(focal.species == "Brer") %>%
-  filter(background.species == "Crbi") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-# Brer in Plal: set a floor or exclude, exp(-3)
-vr.boot %>%
-  filter(focal.species == "Brer") %>%
-  filter(background.species == "Plal") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Crbi
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  filter(pgr< 0.0001 & !is.na(pgr)) %>%
-  .$background.species %>% table()
-
-# Crbi in Crbi: set a floor or exclude: exp(-3)
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(background.species == "Crbi") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-# Crbi in Crbi: set a floor or exclude: exp(-3)
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(background.species == "Plla") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-# Crbi in Crbi: set a floor or exclude: exp(-3)
-vr.boot %>%
-  filter(focal.species == "Crbi") %>%
-  filter(background.species == "Poal") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~site)
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Potr
-vr.boot %>%
-  filter(focal.species == "Potr") %>%
-  filter(site == "Anzeindaz") %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  ggplot(aes(x=log(pgr))) +
-  geom_histogram(bins=100) +
-  facet_wrap(~background.species)
   
 #****************************************************************************
 # ** - 5.1 Calculate mean and standard error across all bootstraps ------
@@ -2355,15 +2144,7 @@ for(i in 1:nrow(vr.mean)) {
   
   # get bootstrapped PGR for each pair
   pgr.boot.i = filter(vr.boot,focal.species == fc.i & background.species == bg.i & site == st.i)$pgr
-  #pgr.boot.i = filter(vr.boot,focal.species == "Crbi" & background.species == "Plla" & site == "Solalex")$pgr
-  
-  
-  # set ceiling for big PGRs
-  #pgr.boot.i = ifelse(pgr.boot.i > 20, 20, pgr.boot.i)
-  
-  # set floor for small PGRs
-  #pgr.boot.i = ifelse(pgr.boot.i < 0.01, 0.01, pgr.boot.i)
-  
+    
   # drop small or huge PGRs
   pgr.boot.i = pgr.boot.i[pgr.boot.i < 20]
   pgr.boot.i = pgr.boot.i[pgr.boot.i > 0.01]
@@ -2440,30 +2221,6 @@ vr.boot[vr.boot$background.species != "none" & vr.boot$background.species == vr.
 vr.boot[vr.boot$background.species != "none" & vr.boot$background.species != vr.boot$focal.species, "competitor"] = "Interspecific"
 
 #************************************************
-# plot "real" vs mean lambda
-# better to use median
-fig.pgr_real.vs.bootstrap <- vr.mean %>%
-  filter(!(background.species %in% c("site", "site_none", "species", "species_none"))) %>%
-  #filter(background.species == "none") %>%
-  filter(focal.species != "Armo") %>%
-  #filter(focal.species == "Potr") %>%
-  filter(!(focal.species == "Trba" & site == "Les Posses")) %>%
-  #filter(focal.species == "Crbi" & background.species == "Poal" & site == "Les Posses")
-  ggplot(aes(x=log(pgr), y=pgr.log.median, ymin=pgr.log.ci.min, ymax=pgr.log.ci.max,label=paste(focal.species,background.species), col=site)) +
-  geom_abline(intercept = 0, slope=1) +
-  #facet_wrap(~site) +
-  geom_text() +
-  geom_point() +
-  geom_errorbar()
-fig.pgr_real.vs.bootstrap
-
-# for one bootstrap
-pgr.boot <- vr.boot %>%
-  filter(bootstrap == 97) %>%
-  .$pgr
-plot(log(pgr.boot), vr.mean$pgr.log.median); abline(a=0,b=1)
-
-#************************************************
 # plot PGR by focal species
 fig.pgr_focal <- vr.mean %>%
   filter(!background.species %in% c("site","site_none","species", "species_none")) %>%
@@ -2474,197 +2231,44 @@ fig.pgr_focal <- vr.mean %>%
   ggplot(aes(x=elevation, y=pgr.log.median, ymin=pgr.log.ci.min, ymax=pgr.log.ci.max, col=competitor)) +
   geom_hline(yintercept = 0, linetype="dotted") +
   geom_pointrange(alpha=0.8, size=0.3) +
-  #geom_errorbar(alpha=0.8, width=0.2) +
   geom_line(aes(group=background.species),size=0.3) +
-  #stat_summary() +
-  #stat_summary(geom="line") +
   scale_color_manual(values=c("None" = "#6DCD59FF",  "Intraspecific" = "#FB9A06FF", "Interspecific" = "grey40")) +
   scale_y_continuous(name="ln(Population growth rate)") +
   scale_x_continuous(breaks=c(890,1400, 1900), name="Elevation (m)") +
   facet_wrap(~focal.species, scales = "free", ncol=4)
 fig.pgr_focal
 
-#************************************************
-# why mean lambda is different from "real" lamnda?
-#************************************************
-# driven by extreme big or small values, should be excluded (< 0.01 or > 20)
-
-# test old lambds
-#vr <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/vital.rates.xlsx")
-vr <- vr[-1,]
-vr$pgr <- as.numeric(vr$pgr)
-
-hist(log(vr$pgr))
-
-vr %>%
-  filter(background.species == "none") %>%
-  #filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  filter(focal.species != "Potr") %>%
-  #filter(focal.species != "Armo") %>%
-  #filter(focal.species != "Trba") %>%
-  lmer(log(pgr) ~ elevation * origin.focal + (1|focal.species), data=.) %>%
-  summary
-  Anova(type=2)
-
-# Intrinsic: -0.0004078; 
-# Invasion:: -0.0002847; -0.0003625
-  
-vr %>%
-  filter(background.species == "none") %>%
-  ggplot(aes(x=elevation , y = log(pgr), label=focal.species, col=origin.focal))  +
-  geom_point() +
-  geom_line(aes(group=focal.species))
-  #geom_smooth(method = "lm")
-
-vr %>%
-  filter(focal.species == "Melu") %>%
-  #filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  ggplot(aes(x=elevation , y = log(pgr), label=paste(focal.species, background.species), col=origin.focal))  +
-  geom_point() +
-  geom_line(aes(group=paste(focal.species, background.species))) +
-  geom_text()
-#geom_smooth(method = "lm")
-
 #****************************************************************************
 # ** - 5.2 Intrinsic growth rate ------
 #****************************************************************************
-# distribtuion of intrinsic PGR
-vr.boot %>%
-  filter(background.species == "none") %>%
-  #filter(focal.species != "Armo") %>%
-  #filter(!(focal.species == "Trba" & site == "Les Posses")) %>%
-  #filter(!(focal.species == "Seca" & site == "Solalex")) %>%
-  #filter(log(pgr) <0) %>%
-  #.$pgr %>% hist(breaks=100)
-  ggplot(aes(x=log(pgr))) +
-  #facet_wrap(~focal.species) +
-  geom_histogram(bins=100)
-
-# which species < 0
-vr.mean %>%
-  filter(background.species == "none") %>%
-  filter(pgr.log.median <0) %>%
-  #filter(log(pgr) <0) %>%
-  .[c("focal.species", "site", "pgr", "pgr.mean", "pgr.log.mean")]
 
 #***********************************************
 # intrinsic PGR based on mean and SE
-# test: intrinsic and invasion together
-vr.mean %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #filter(focal.species != "Potr") %>%
-  lmer(pgr.log.median ~ elevation * origin.focal*neighbor+ (1|focal.species), data=.) %>%
-  #summary
-  Anova(type=2)
-
-# test: intrinsic and invasion together for lowland species
-vr.mean %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  filter(origin.focal == "Lowland") %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #filter(focal.species != "Potr") %>%
-  lmer(pgr.log.mean ~ elevation * neighbor+ (1|focal.species), data=.) %>%
-  #summary
-  Anova(type=2)
-
-# test: intrinsic and invasion together for highland species
-vr.mean %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  filter(origin.focal == "Highland") %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #filter(focal.species != "Potr") %>%
-  lmer(pgr.log.mean ~ elevation * neighbor+ (1|focal.species), data=.) %>%
-  #summary
-  Anova(type=2)
-
 # test: only intrinsic
 vr.mean %>%
   filter(background.species == "none") %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #filter(focal.species == "Potr") %>% .$pgr.log.median
   lmer(pgr.log.median ~ elevation * origin.focal+ (1|focal.species), data=.) %>%
   #summary
   Anova(type=2)
-
-# check
-vr.mean2 <- filter(vr.mean,background.species == "none") 
-vr.mean2[vr.mean2$focal.species == "Potr" & vr.mean2$site == "Anzeindaz","pgr.log.median"] = 0.772
 
 # coefficients of mean PGR
 coef.intrinsic.mean <- 
   vr.mean %>%
   filter(background.species == "none") %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #filter(focal.species != "Potr") %>%
   lmer(pgr.log.median ~ elevation * origin.focal+ (1|focal.species), data=.) %>%
   fixef()
-
-# plot
-fig.pgr.intrinsic_se <- vr.mean %>%
-  filter(background.species == "none") %>% 
-  #.$pgr.se
-  #filter(focal.species != "Armo") %>%
-  #filter(!(focal.species == "Trba" & site == "Les Posses")) %>%
-  #filter(competitor == "Inter-specific") %>%
-  #filter(origin.focal=="Lowland") %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  mutate(origin.focal = factor(origin.focal, levels=c("Lowland", "Highland"))) %>%
-  #mutate(pgr.scale = ifelse(pgr.log.mean > -3, pgr.log.mean, -3)) %>%
-  #ggplot(aes(x=elevation, y=pgr.log.mean, col=origin.focal, ymin=pgr.log.mean - pgr.log.se, ymax=pgr.log.mean + pgr.log.se)) + 
-  ggplot(aes(x=elevation, y=pgr.log.mean, col=origin.focal, ymin=pgr.log.ci.min, ymax=pgr.log.ci.max, label=focal.species)) + 
-  geom_hline(yintercept = 0, linetype="dashed") +
-  #geom_line(aes(group=focal.species)) +
-  #geom_text() +
-  #geom_point(alpha=0.5, col="grey") + 
-  #geom_errorbar(alpha=0.5, width=0, col="grey") + 
-  stat_summary(size=0.5) + 
-  # general trend of highland species
-  geom_segment(aes(x=890, xend=1900, y= coef.intrinsic.mean["(Intercept)"] + 890*coef.intrinsic.mean["elevation"], yend = coef.intrinsic.mean["(Intercept)"] + 1900*coef.intrinsic.mean["elevation"]),col="#3E4A89FF", size=1) +
-  # general trend of lowland species
-  geom_segment(aes(x=890, xend=1900, y= (coef.intrinsic.mean["(Intercept)"]+coef.intrinsic.mean["origin.focalLowland"]) + 890*(coef.intrinsic.mean["elevation"]+coef.intrinsic.mean["elevation:origin.focalLowland"]), yend = (coef.intrinsic.mean["(Intercept)"]+coef.intrinsic.mean["origin.focalLowland"]) + 1900*(coef.intrinsic.mean["elevation"]+coef.intrinsic.mean["elevation:origin.focalLowland"])),col="#FB9A06FF", size=1) +
-  scale_x_continuous(breaks=c(890,1400, 1900), name="Elevation (m)") +
-  scale_y_continuous(name="ln(invasion growth rate)") +
-  #coord_cartesian(ylim=c(-5,NA)) +
-  scale_color_manual(values = c("Highland" = "#3E4A89FF",  "Lowland" = "#FB9A06FF")) 
-fig.pgr.intrinsic_se
 
 #***********************************************
 # intrinsic PGR for each bootstrap
 # test for each bootstrap: only intrinsic
 test.intrinsic.boot <- vr.boot %>%
   filter(background.species == "none") %>%
-  #filter(pgr > 0.01) %>% filter(pgr < 20) %>% # exclude extreme values
   mutate(pgr = ifelse(pgr < 0.01, 0.01, pgr)) %>% mutate(pgr = ifelse(pgr > 20, 20, pgr)) %>%
-  #filter(focal.species != "Armo") %>%
-  #filter(!(focal.species == "Trba" & site == "Les Posses")) %>% 
   split(.$bootstrap) %>%
   purrr::map(~lmer(log(pgr) ~ elevation * origin.focal+ (1|focal.species) , data=.)) 
 
 coef.intrisinc <- test.intrinsic.boot %>%
   purrr::map_dfr(fixef, .id="bootstrap")
-
-# histgram of p values
-anova.intrinsic = test.intrinsic.boot %>%
-  purrr::map_dfr(coef.lmer, .id="bootstrap")
-p.value.intrinsic <- anova.intrinsic[(1:500)*3,4]
-
-fig.pgr.intrinsic_p.value <-  data.frame(p.value = p.value.intrinsic,
-                                         bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) + 
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, linetype="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.pgr.intrinsic_p.value
-
-# 490 bootstraps showed the significant interactions
-sum(p.value.intrinsic < 0.05)
 
 # get coefficient for each bootstrap
 coef.intrinsic.boot <- test.intrinsic.boot %>% purrr::map(fixef)
@@ -2715,28 +2319,6 @@ median_ci_quantile(coef.invasion.intrisinc$elevation)
 # lowland: -0.00112471 -0.00137776 -0.0008852111
 median_ci_quantile(coef.invasion.intrisinc$`elevation:origin.focalLowland`)
 
-# CI of slopes
-hist(coef.intrinsic.boot.mean$slo.highland)
-hist(coef.intrinsic.boot.mean$slo.lowland)
-# highland: 0.0007047861 0.0004836991 0.0008923608
-intrinsic.slope.ci.highland <-  median_ci_quantile(coef.intrinsic.boot.mean$slo.highland)
-# lowland: -0.0004212202 -0.0005819752 -0.0002765271
-inrinsic.slope.ci.lowland <- median_ci_quantile(coef.intrinsic.boot.mean$slo.lowland)
-
-# combine lowland and highland
-intrinsic.slope <- as.data.frame(rbind(intrinsic.slope.ci.highland, inrinsic.slope.ci.lowland))
-colnames(intrinsic.slope) <- c("y", "ymin", "ymax")
-intrinsic.slope$origin.focal = factor(c("Highland", "Lowland"), levels=c("Lowland", "Highland"))
-
-fig.pgr.intrinsic_slope <- intrinsic.slope %>%
-  ggplot(aes(x=origin.focal, y=y, ymin=ymin, ymax=ymax)) +
-  geom_hline(yintercept = 0,linetype="dashed") +
-  geom_pointrange() +
-  #geom_errorbar() +
-  scale_x_discrete(name="Origin of focal species") +
-  scale_y_continuous(name="Slope")
-fig.pgr.intrinsic_slope
-
 # add ribbon
 # SD CI
 d.ribbon_pgr.intrinsic <- pre.intrinsic.bootstrap %>%
@@ -2759,9 +2341,6 @@ d.seg.intrinsic <- data.frame(x=890,
 fig.pgr.intrinsic_boot <- pre.intrinsic.bootstrap %>%
   ggplot(aes(col=origin.focal, fill=origin.focal)) +
   geom_hline(yintercept = 0, linetype="dashed") +
-  
-  # add bootstrap lines
-  #geom_path(aes(x=elevation, y=pgr, linetype=origin.focal), col="grey", show.legend = FALSE) + 
   
   # add CI
   geom_ribbon(data=d.ribbon_pgr.intrinsic, aes(x=elevation, ymin=ymin, ymax=ymax), col="white",alpha=0.3,show.legend = FALSE) +
@@ -2791,17 +2370,10 @@ fig.pgr.intra_ci_focal <- vr.mean %>%
   mutate(elevation = factor(elevation, levels=c("890", "1400", "1900"))) %>%
   mutate(focal.species = factor(focal.species, levels=c("Anal","Armo","Asal","Plal", "Poal", "Seca", "Trba",    # 7 alpine species
                                                         "Brer", "Crbi", "Daca","Melu" , "Plla", "Potr", "Sapr"))) %>% # 7 lowland species
-  #filter(focal.species != "Armo") %>%
-  #filter(!(focal.species == "Trba" & site == "Les Posses")) %>%
   ggplot(aes(x=focal.species, y=pgr.log.median, col=elevation, ymin=pgr.log.ci.min, ymax = pgr.log.ci.max)) +
   geom_hline(yintercept = 0, linetype="dashed") +
-  #geom_hline(yintercept = -0.69, linetype="dotted") +
-  #geom_hline(yintercept = 0.4, linetype="dotted") +
   geom_pointrange(position = position_dodge2(width=0.5)) +
   scale_color_manual(values=c("890" = "#FB9A06FF", "1400" = "#6DCD59FF", "1900" = "#3E4A89FF")) +
-  #scale_color_manual(values=c("Highland" = "#3E4A89FF",  "Lowland" = "#FB9A06FF")) +
-  #geom_errorbar(aes()) +
-  #stat_summary(fun.data = mean_ci , col="black") +
   facet_wrap(~origin.focal, scale="free") +
   coord_cartesian(ylim=c(-4,2))  +
   scale_x_discrete(name = "Focal species") +
@@ -2840,14 +2412,6 @@ sum(d.temp1 < 0 & d.temp2 > 0, na.rm = TRUE)
 #****************************************************************************
 # ** - 5.3 Invasion growth rate ------
 #****************************************************************************
-# no pairs but estimated PGR?
-# could keep Plal in Sapr in LP
-vr.boot %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  filter(!is.na(pgr)) %>%
-  .[,c("focal.species","background.species", "site")]  %>%
-  table()
-
 #***********************************************
 # invasion PGR based on mean and SE
 # distribution of invasion grwoth rates
@@ -2862,84 +2426,23 @@ test.pgr.invasion <- vr.mean %>%
   filter(pair == "yes") %>%
   filter(!is.na(pgr.log.mean)) %>%
   filter(!is.infinite(pgr.log.mean)) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  #lmer(pgr.mean ~ elevation * origin.focal+ (1|focal.species) + (1|background.species), data=.) %>%
-  lmer(pgr.log.median ~ elevation * origin.focal+ (1|focal.species) + (1|background.species), data=.) 
+  lmer(pgr.log.mean ~ elevation * origin.focal+ (1|focal.species) + (1|background.species), data=.) 
 
 test.pgr.invasion %>%
     #summary() # 312 pairs
   Anova(type=2)
 
-# extract linear coefficients
-coef.invasion.mean <- test.pgr.invasion %>% fixef()
-
-# plot
-fig.pgr.invasion_se <- vr.mean %>%
-  filter(!background.species %in% c("none","site","site_none","species", "species_none")) %>%
-  filter(pair == "yes") %>%
-  #filter(competitor == "Inter-specific") %>%
-  #filter(origin.focal=="Lowland") %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  mutate(origin.focal = factor(origin.focal, levels=c("Lowland", "Highland"))) %>%
-  #mutate(pgr.scale = ifelse(pgr.log.mean > -3, pgr.log.mean, -3)) %>%
-  #ggplot(aes(x=elevation, y=pgr.log.mean, col=origin.focal, ymin=pgr.log.mean - pgr.log.se, ymax=pgr.log.mean + pgr.log.se)) + 
-  ggplot(aes(x=elevation, y=pgr.log.median, col=origin.focal, ymin=pgr.log.mean - pgr.log.se, ymax=pgr.log.mean + pgr.log.se)) + 
-  geom_hline(yintercept = 0, linetype="dashed") +
-  geom_point(col="grey") + 
-  stat_summary(size=0.5) + 
-  # general trend of highland species
-  geom_segment(aes(x=890, xend=1900, y= coef.invasion.mean["(Intercept)"] + 890*coef.invasion.mean["elevation"], yend = coef.invasion.mean["(Intercept)"] + 1900*coef.invasion.mean["elevation"]),col="#3E4A89FF", size=1) +
-  # general trend of lowland species
-  geom_segment(aes(x=890, xend=1900, y= (coef.invasion.mean["(Intercept)"]+coef.invasion.mean["origin.focalLowland"]) + 890*(coef.invasion.mean["elevation"]+coef.invasion.mean["elevation:origin.focalLowland"]), yend = (coef.invasion.mean["(Intercept)"]+coef.invasion.mean["origin.focalLowland"]) + 1900*(coef.invasion.mean["elevation"]+coef.invasion.mean["elevation:origin.focalLowland"])),col="#FB9A06FF", size=1) +
-  scale_x_continuous(breaks=c(890,1400, 1900), name="Elevation (m)") +
-  scale_y_continuous(name="ln(invasion growth rate)") +
-  #coord_cartesian(ylim=c(-5,NA)) +
-  scale_color_manual(values = c("Highland" = "#3E4A89FF",  "Lowland" = "#FB9A06FF")) 
-fig.pgr.invasion_se
-
 #****************************************
 # invasion PGR test for each bootstrap
-# distribution of invasion grwoth rates
-vr.boot %>%
-  #filter(pgr > 0.01) %>%
-  #filter(pgr < 20) %>%
-  #mutate(pgr = ifelse(pgr < 0.001, 0.001, pgr)) %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  .$pgr %>% log() %>%
-  hist()
-
-# plot each bootstrap
-vr.boot %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  filter(pair == "yes") %>%
-  filter(bootstrap==19) %>%
-  #filter(competitor == "Inter-specific") %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  mutate(pgr = ifelse(pgr < 0.01, 0.01, pgr)) %>%
-  mutate(pgr.log = log(pgr)) %>%
-  ggplot(aes(x=elevation, y = pgr.log, col=origin.focal)) +
-  geom_jitter(height=0.1,width=30) +
-  geom_smooth(method = "lm", se=FALSE)
-
 # test
 test.invasion.boot <- vr.boot %>%
   filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
   filter(pair == "yes") %>%
   filter(!is.na(pgr)) %>%
-  #filter(!(bootstrap %in% c(7, 16, 22, 30, 70, 75, 92))) %>%
-  #filter(!focal.species %in% c("Armo")) %>%
-  #filter(!focal.species %in% c("Armo", "Trba")) %>%
-  
-  # drop extreme PGRs
-  #filter(pgr != 0) %>%
-  #filter(pgr > 0.01) %>%
-  #filter(pgr < 20) %>%
   
   # floor small PGRs
   mutate(pgr = ifelse(pgr < 0.01, 0.01, pgr)) %>%
   mutate(pgr = ifelse(pgr > 20, 20, pgr)) %>%
-  #mutate(pgr = ifelse(pgr > exp(-10), pgr, exp(-10))) %>%
   
   split(.$bootstrap) %>%
   purrr::map(~lmer(log(pgr) ~ elevation * origin.focal+ (1|focal.species) + (1|background.species), data=.) )
@@ -2948,19 +2451,6 @@ test.invasion.boot <- vr.boot %>%
 p.value_pgr.invasion <- 
   test.invasion.boot %>% 
   purrr::map_dfr(coef.lmer)
-
-# distribution of p values
-fig.pgr.invasion_p.value <-  data.frame(p.value = p.value_pgr.invasion[(5:500)*3,3],
-                                        bootstrap = 5:500) %>%
-  ggplot(aes(p.value)) + 
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, linetype="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.pgr.invasion_p.value
-
-# 484 bootstraps showed significant relationships
-sum(p.value_pgr.invasion[(5:500)*3, 3] < 0.05)
 
 # get coefficient for each bootstrap
 coef.invasion.boot <- 
@@ -3016,30 +2506,6 @@ median_ci_quantile(coef.invasion.interaction$elevation)
 hist(coef.invasion.interaction$`elevation:origin.focalLowland`)
 median_ci_quantile(coef.invasion.interaction$`elevation:origin.focalLowland`)
 
-# CI of slopes
-hist(coef.invasion.boot.mean$slo.highland, labels=TRUE)
-hist(coef.invasion.boot.mean$slo.lowland, labels=TRUE)
-# highland: 0.0005369556 0.0004219872 0.0006567842
-invasion.slope.ci.highland <- median_ci_quantile(coef.invasion.boot.mean$slo.highland, na.rm=TRUE)
-# lowland: -0.0002713552 -0.0005498747 1.007088e-05
-invasion.slope.ci.lowland <- median_ci_quantile(coef.invasion.boot.mean$slo.lowland, na.rm=TRUE)
-
-# slopes of lowland and highland
-invasion.slope <- as.data.frame(rbind(invasion.slope.ci.highland, invasion.slope.ci.lowland))
-colnames(invasion.slope) <- c("y", "ymin", "ymax")
-invasion.slope$origin.focal = factor(c("Highland", "Lowland"), levels = c("Lowland", "Highland"))
-
-# plot
-fig.pgr.invasion_slope <- invasion.slope %>%
-  ggplot(aes(x=origin.focal, y=y, ymin=ymin, ymax=ymax)) +
-  geom_hline(yintercept = 0,linetype="dashed") +
-  geom_pointrange() +
-  #geom_errorbar() +
-  scale_x_discrete(name="Species origin") +
-  scale_y_continuous(name="Slope")
-fig.pgr.invasion_slope
-fig.pgr.intrinsic_slope
-
 # add ribbon
 # SD CI
 d.ribbon_pgr.invasion <- pre.invasion.bootstrap %>%
@@ -3062,8 +2528,7 @@ d.seg.invasion <- data.frame(x=890,
 fig.pgr.invasion_boot <-  pre.invasion.bootstrap %>%
   ggplot(aes( col=origin.focal, fill=origin.focal)) +
   geom_hline(yintercept = 0, linetype="dashed") +
-  # add bootstrap line
-  #geom_path(aes(x=elevation, y=pgr,linetype=origin.focal), col="grey") + 
+
   # add ribbon
   geom_ribbon(data=d.ribbon_pgr.invasion, aes(x=elevation, ymin=ymin, ymax=ymax), col="white", alpha=0.4, show.legend = FALSE) +
   
@@ -3089,8 +2554,7 @@ fig.pgr.intrinsic_boot
 fig.pgr_boot <-  bind_rows(pre.intrinsic.bootstrap, pre.invasion.bootstrap)  %>%
   ggplot(aes( col=origin.focal, fill=origin.focal)) +
   geom_hline(yintercept = 0, linetype="dashed") +
-  # add bootstrap line
-  #geom_path(aes(x=elevation, y=pgr,linetype=origin.focal), col="grey") + 
+
   # add ribbon
   geom_ribbon(data=bind_rows(d.ribbon_pgr.intrinsic, d.ribbon_pgr.invasion), 
               aes(x=elevation, ymin=ymin, ymax=ymax), 
@@ -3121,8 +2585,6 @@ fig.pgr_boot
 # ** - 6.1 Calculate sensitivity -------
 #*************************************************
 # make columns for sensitivity
-#vr.boot <- vr
-
 # Intrinsic lambdas
 vr.intrinsic <- filter(vr.boot, background.species == "none")
 vr.intrinsic$ID_focal.species <- paste(vr.intrinsic$focal.species, vr.intrinsic$site, vr.intrinsic$bootstrap)
@@ -3142,38 +2604,11 @@ vr.boot$sensitivity.raw2 <- as.numeric(NA)
 vr.boot[vr.boot$pgr.intrinsic.focal > 1 & !is.na(vr.boot$pgr.intrinsic.focal), "sensitivity.raw2"] = 1- log(vr.boot[vr.boot$pgr.intrinsic.focal > 1 & !is.na(vr.boot$pgr.intrinsic.focal), ]$pgr) / log(vr.boot[vr.boot$pgr.intrinsic.focal > 1 & !is.na(vr.boot$pgr.intrinsic.focal), ]$pgr.intrinsic.focal)
 vr.boot[vr.boot$pgr.intrinsic.focal < 1 & !is.na(vr.boot$pgr.intrinsic.focal), "sensitivity.raw2"] = log(vr.boot[vr.boot$pgr.intrinsic.focal < 1 & !is.na(vr.boot$pgr.intrinsic.focal), ]$pgr) / log(vr.boot[vr.boot$pgr.intrinsic.focal < 1 & !is.na(vr.boot$pgr.intrinsic.focal), ]$pgr.intrinsic.focal) - 1
 
-# distribution of sensitivity
-vr.boot %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  filter(focal.species != "Armo") %>%
-  filter(!(focal.species == "Trba" & site == "Les Posses")) %>%
-  filter(pair == "yes") %>%
-  #filter(sensitivity.raw > -5) %>%
-  #filter(sensitivity.raw < 5) %>%
-  ggplot(aes(x=log(sensitivity.raw2))) +
-  facet_wrap(~focal.species, scales="free_y") +
-  geom_histogram(bins=100)
-
-# plot sensitivity
-fig.sensitivity <- vr.boot %>%
-  filter(focal.species != "Potr") %>%
-  filter(focal.species != "Armo") %>%
-  filter(bootstrap == 0) %>%
-  filter(sensitivity.raw2 > 0) %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  #filter(sensitivity.raw2)
-  ggplot(aes(x=elevation, y = log(sensitivity.raw2))) +
-  geom_point(col="grey") +
-  geom_smooth(method = "lm") +
-  stat_summary(col="red") +
-  facet_wrap(~origin.focal, scales = "free")
-fig.sensitivity
-
 #*************************************************
 # ** - 6.2 Coexistence outcome -----
 #*************************************************
 # outcomes
-out <- read_excel("/Users/slyu/LVSM/NICH/Results/IPM_log.size/coexistence/coexistence_bootstrap_null.xlsx")
+out <- read_excel("coexistence_bootstrap_null.xlsx")
 out <- out[-1,]
 out$site <- factor(out$site, levels = c("Les Posses","Solalex", "Anzeindaz"))
 out$origin.pair = dplyr::recode(out$origin.pair, "Highland_Highland" = "Highland-highland", "Lowland_Lowland" = "Lowland-lowland", "Lowland_Highland" = "Lowland-highland")
@@ -3265,14 +2700,6 @@ for(a in 1:nrow(out.boot)) {
   
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # coexistence by NDFD
-  # if species failed to establish
-  #if(igr1 < 0) { s12 = 1.1; out[a, "comment"] <- paste(out[a, "comment"], "score s12 1.1", sep="_") }
-  # if positive interactions
-  #else if(igr1 > 0 & s12 < 0) { s12 = 0.1; out[a, "comment"] <- paste(out[a, "comment"], "score s12 0.1", sep="_") } 
-  
-  #if(igr2 < 0) {s21 = 1.1; out[a, "comment"] <- paste(out[a, "comment"], "score s21 1.1", sep="_")}
-  #else if(igr2 > 0 & s21 < 0) { s21 = 0.1; out[a, "comment"] <- paste(out[a, "comment"], "score s21 0.1", sep="_") } 
-  
   ni <- coex.ndfd(s12, s21)
   out.boot[a,"nd"] <- ni$ndfd[1]
   out.boot[a,"fd"] <- ni$ndfd[2]
@@ -3306,57 +2733,23 @@ for(a in 1:nrow(out.boot)) {
   print(a)
 }
 
-# write.csv(out.boot, "/Users/slyu/LVSM/NICH/Results/R output_ok to delete/outcome_bootstrap_pgr_ceiling_20220202.csv")
-
 #*************************************************
 # ** - 6.3 IGR outcomes across sites ------
 #*************************************************
 source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
 
-#out.boot <- read_csv("/Users/slyu/LVSM/NICH/Results/IPM_log.size/coexistence/outcome_bootstrap_20220201.csv")
-out.boot <- read_csv("/Users/slyu/LVSM/NICH/Results/IPM_log.size/coexistence/outcome_bootstrap_pgr_ceiling_20220202.csv")
+out.boot <- read_csv("SD3_outcome_bootstrap.csv")
 out.boot$site <- factor(out.boot$site, levels=c("Les Posses", "Solalex", "Anzeindaz"))
 
 #*************************************************
 # how many pairs including facilitations
 # 6282/52003 = 12%
-# 4027/52003 = 8% pairs
 out.boot %>%
   filter(!is.na(outcome.ndfd)) %>%
-  #filter(sensitivity.12 == 0.1 | sensitivity.21 == 0.1) # facilitations
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)  %>%
-  filter(lambda1 < 1 | lambda2 < 1)
-
-#*************************************************
-# how many pairs in each bootstrap
-n.pairs <- out.boot %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)  %>%
-  split(.$bootstrap) %>%
-  purrr::map(~!is.na(.$outcome.igr)) %>%
-  #purrr::map(~!is.na(.$outcome.ndfd)) %>%
-  purrr::map(sum)
-# the number of pairs differ between bootstrap
-# the number of pairs differ between bootstrap
-n.pairs
-
-# barplot
-data.frame(n.pairs=unlist(n.pairs),
-           bootstrap = 0:499) %>%
-  ggplot(aes(x=bootstrap, y = n.pairs, label = n.pairs)) +
-  geom_hline(yintercept = 107) +
-  geom_bar(stat = "identity") +
-  geom_text(vjust=0)
+  filter(sensitivity.12 == 0.1 | sensitivity.21 == 0.1)
 
 #*************************************************
 # outcomes across the three sites
-temp <- out.boot %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)  %>%
-  group_by(bootstrap, outcome.igr) %>%
-  summarise(n=table(outcome.igr))
-median_ci_quantile(unlist(temp[temp$outcome.igr=="Coexistence","n"]))
-median_ci_quantile(unlist(temp[temp$outcome.igr=="Competitive exclusion","n"]))
-median_ci_quantile(unlist(temp[temp$outcome.igr=="Priority effect","n"]))
-
 # hig-high
 out.hh <- out.boot %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)  %>%
@@ -3364,8 +2757,6 @@ out.hh <- out.boot %>%
   split(.$bootstrap) %>%
   purrr::map(~.[c("outcome.igr","site")]) %>%
   purrr::map(table)
-
-out.hh$`0`
 
 # low-low
 out.ll <- out.boot %>%
@@ -3375,8 +2766,6 @@ out.ll <- out.boot %>%
   purrr::map(~.[c("outcome.igr","site")]) %>%
   purrr::map(table)
 
-out.ll$`0`
-
 # low-high
 out.lh <- out.boot %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)  %>%
@@ -3384,8 +2773,6 @@ out.lh <- out.boot %>%
   split(.$bootstrap) %>%
   purrr::map(~.[c("outcome.igr","site")]) %>%
   purrr::map(table)
-
-out.lh$`0`
 
 #*************************************************
 # Summary competitive outcomes
@@ -3451,29 +2838,6 @@ for(i in 1:500) {
 }
 
 # summarise
-# show 3 outcomes
-outcome.igr.summary <- out.igr.boot %>%
-  group_by(origin.pair, elevation, outcome.igr) %>%
-  dplyr::summarise(mean_ci_sd(number.pair, na.rm=TRUE)[1], mean_ci_sd(number.pair, na.rm=TRUE)[2], mean_ci_sd(number.pair, na.rm=TRUE)[3]) 
-
-outcome.igr.summary$ymin[outcome.igr.summary$outcome.igr == "Competitive exclusion"] = with(outcome.igr.summary, ymin[outcome.igr == "Competitive exclusion"] + y[outcome.igr == "Coexistence"])
-outcome.igr.summary$ymax[outcome.igr.summary$outcome.igr == "Competitive exclusion"] = with(outcome.igr.summary, ymax[outcome.igr == "Competitive exclusion"] + y[outcome.igr == "Coexistence"])
-outcome.igr.summary$ymin[outcome.igr.summary$outcome.igr == "Priority effect"] = with(outcome.igr.summary, ymin[outcome.igr == "Priority effect"] + y[outcome.igr == "Coexistence"] + y[outcome.igr == "Competitive exclusion"])
-outcome.igr.summary$ymax[outcome.igr.summary$outcome.igr == "Priority effect"] = with(outcome.igr.summary, ymax[outcome.igr == "Priority effect"] + y[outcome.igr == "Coexistence"] + y[outcome.igr == "Competitive exclusion"])
-
-fig.outcome.igr_3outcomes <- outcome.igr.summary %>%
-  mutate(elevation = factor(elevation, levels = c("890","1400","1900"))) %>%
-  mutate(origin.pair = factor(origin.pair, levels = c("Lowland-lowland", "Lowland-highland", "Highland-highland"))) %>%
-  mutate(outcome.igr = factor(outcome.igr, levels=c("Priority effect", "Competitive exclusion", "Coexistence"))) %>%
-  ggplot(aes(x=elevation, y = y, ymin=ymin, ymax=ymax, fill=outcome.igr)) + 
-  scale_fill_manual(values=c("Coexistence" = "grey82","Priority effect" = "grey92", "Competitive exclusion"= "grey100" )) +
-  geom_bar(stat = "identity",  position="stack", col="black") +
-  geom_errorbar(width=0.2, alpha=0.6) +
-  facet_wrap(~origin.pair, scales = "free", nrow=1, strip.position = NULL) +
-  scale_y_continuous(name = "Number of pairs") +
-  scale_x_discrete(name = "Elevation (m)")
-fig.outcome.igr_3outcomes
-
 # show 2 outcomes
 outcome.igr.summary <- out.igr.boot %>%
   mutate(outcome.igr = dplyr::recode(outcome.igr, "Priority effect" = "Competitive exclusion", "Competitive exclusion" = "Competitive exclusion", "Coexistence" = "Coexistence")) %>%
@@ -3495,108 +2859,6 @@ fig.outcome.igr_2outcomes <- outcome.igr.summary %>%
   scale_y_continuous(name = "Number of pairs", labels = scales::number_format(accuracy = 1)) +
   scale_x_discrete(name = "Elevation (m)")
 fig.outcome.igr_2outcomes
-
-#*************************************************
-# proportion of coexistence
-prop.hh <- prop.lh <- prop.ll <- NULL
-for(i in 1:500) {
-  # high-high
-  prop.hhi = out.hh[[i]][1,]/colSums(out.hh[[i]]) 
-  prop.hh <- rbind(prop.hh, prop.hhi)
-  
-  # low-high
-  prop.lhi = out.lh[[i]][1,]/colSums(out.lh[[i]]) 
-  prop.lh <- rbind(prop.lh, prop.lhi)
-  
-  # low-low
-  prop.lli = out.ll[[i]][1,]/colSums(out.ll[[i]]) 
-  prop.ll <- rbind(prop.ll, prop.lli)
-}
-prop.hh = as.data.frame(prop.hh); prop.hh$pair = "Highland-highland"
-prop.lh = as.data.frame(prop.lh); prop.lh$pair = "Lowland-highland"
-prop.ll = as.data.frame(prop.ll); prop.ll$pair = "Lowland-lowland"
-
-# mean of each group in each site
-mean.prop <- bind_rows(prop.hh,prop.lh, prop.ll) %>%
-  pivot_longer(1:3, values_to = "proportion", names_to ="site") %>%
-  group_by(pair, site) %>%
-  summarise(median_ci_quantile(proportion))
-mean.prop
-
-fig.outcome.igr_prop <- bind_rows(prop.hh,prop.lh, prop.ll) %>%
-  pivot_longer(1:3, values_to = "proportion", names_to ="site")  %>%
-  mutate(pair = factor(pair, levels=c("Lowland-lowland", "Lowland-highland", "Highland-highland"))) %>%
-  mutate(elevation = dplyr::recode(site, "Les Posses" = "890", "Solalex" = "1400",  "Anzeindaz" = "1900")) %>%
-  mutate(elevation = factor(elevation, levels=c("890", "1400", "1900"))) %>%
-  ggplot(aes(x=elevation, y=proportion, col=pair)) +
-  geom_jitter(col="grey", height=0, width=0.1) +
-  stat_summary(size=0.8, show.legend = FALSE) +
-  stat_summary(geom="errorbar", width=0.2, fun.data = mean_ci_quantile, size=1, show.legend = FALSE) +
-  #geom_boxplot(alpha=0.5) +
-  facet_wrap(~pair, scales="free") +
-  #coord_cartesian(ylim=c(0, 0.9)) +
-  scale_color_manual(values=c("Lowland-lowland" = "#FB9A06FF", "Lowland-highland" = "#6DCD59FF", "Highland-highland" = "#3E4A89FF")) +
-  scale_x_discrete(name="Elevation (m)") +
-  scale_y_continuous(name="Proportion of coexistence", labels = scales::number_format(accuracy = 0.01))
-fig.outcome.igr_prop
-
-#*************************************************
-# test based on the mean
-#*************************************************
-hist(log(out.boot$coexistence.metric))
-hist(log(1-out.boot$nd))
-hist(log(out.boot$fd))
-
-out.boot %>%
-  filter(bootstrap == 0) %>%
-  
-  # remove facilitations
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  
-  #filter(!(outcome.igr == "Competitive exclusion" & outcome.ndfd == "Coexistence")) %>%
-
-  #filter(lambda1 > 1 & lambda2 >1) %>%
-  
-  #filter(!(lambda1 < 1 & sensitivity.12 == 0.01)) %>%
-  #filter(!(lambda2 < 1 & sensitivity.21 == 0.01)) %>%
-  #filter(pair != "Crbi_Poal") %>%
-  #filter(pair != "Asal_Potr") %>%
-  #filter(pair != "Seca_Melu") %>% # 104 pairs
-  #filter(pair != "Brer_Melu") %>% # 104 pairs
-  
-  #filter(sensitivity.21 != 0 & sensitivity.21 != 0.01) %>%
-  #lmer(log(coexistence.metric) ~ origin.pair * elevation + (1|pair), data=.) %>%
-  #lmer(log(1- nd) ~ origin.pair * elevation + (1|pair), data=.) %>%
-  #lmer(abs(log(fd.highlow)) ~ elevation*origin.pair + (1|pair), data=.) %>%
-  filter(origin.pair == "Lowland-highland") %>% lmer(log(fd.highlow) ~ elevation + (1|pair), data=.) %>%
-  Anova()
-  summary()
-
-out.boot %>%
-  # include only pairs with same outcomes
-  filter(bootstrap == 0) %>%
-  #filter(!(outcome.igr == "Competitive exclusion" & outcome.ndfd == "Coexistence")) %>%
-  
-  # remove lambda < 0
-  #filter(lambda1 > 1 & lambda2 > 1) %>%
-  
-  # remove facilitations
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  
-  # remove pairs
-  #filter(pair != "Crbi_Poal") %>%
-  #filter(pair != "Asal_Potr") %>%
-  #filter(pair != "Seca_Melu") %>% # 104 pairs
-  #filter(pair != "Brer_Melu") %>% # 104 pairs
-  #ggplot(aes(x=elevation, y = log(coexistence.metric), label=pair)) +
-  #ggplot(aes(x=elevation, y = log(1-nd), label=pair)) +
-  ggplot(aes(x=elevation, y = log(fd.highlow), label=pair)) +
-  #geom_point(alpha=0.5) +
-  geom_line(aes(group=pair)) +
-  geom_text() +
-  geom_smooth(method="lm" ,se=FALSE) +
-  stat_summary(col="red") +
-  facet_wrap(~origin.pair)
 
 #****************************************************
 # ** - 6.4 NDFD outcomes across sites -----
@@ -3626,7 +2888,6 @@ out.mean$cm.mean <-
   out.mean$fd.max <- 
   out.mean$fd.sample  <- 
   
-  out.mean$n.nonpersisting <-
   out.mean$n.facilitation <- as.numeric(NA)
 
 for(i in 1:nrow(out.mean)) {
@@ -3638,10 +2899,6 @@ for(i in 1:nrow(out.mean)) {
   spi.2 <- di$sps2
   st.i <- as.character(di$site)
   
-  #spi.1 = "Anal"
-  #spi.2 = "Trba"
-  #st.i = "Anzeindaz"
-  
   # get the bootstrapped data
   out.i <- out.boot %>%
     filter(sps1 == spi.1 & sps2 == spi.2 & site == st.i) %>%
@@ -3650,7 +2907,6 @@ for(i in 1:nrow(out.mean)) {
     filter(!is.infinite(fd.highlow))
   
   # number of non-persisting and facilitations
-  out.mean[i,"n.nonpersisting"] <- nrow(filter(out.i, !is.na(coexistence.metric) & (lambda1 < 1 | lambda2 < 1)))
   out.mean[i,"n.facilitation"] <- nrow(filter(out.i, !is.na(coexistence.metric) & (sensitivity.12 == 0.1 | sensitivity.21 == 0.1)))
   
   out.i <- out.boot %>%
@@ -3709,108 +2965,6 @@ hist(out.mean$cm.sample)
 hist(out.mean$nd.sample)
 hist(out.mean$fd.sample)
 
-#************************************
-# facilitations
-pair.facilitation <- out.mean %>%
-  filter(n.facilitation > 50) %>%
-  .$ID.pair
-pair.facilitation
-
-#************************************
-# non-persistence
-out.mean$n.nonpersisting
-pair.nonpersisting <- out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(n.nonpersisting > 50) %>%
-  .$ID.pair
-pair.nonpersisting
-
-#************************************
-# coexistence across sites----
-# how many pairs in each site?
-out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(!is.na(cm.mean)) %>%
-  .[c("origin.pair", "site")] %>%
-  table
-
-# highland-highland
-out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(!is.na(cm.mean)) %>%
-  filter(origin.pair == "Highland-highland") %>%
-  .[c("site", "pair")] %>%
-  table()
-
-# lowland-lowland
-out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(!is.na(cm.mean)) %>%
-  filter(origin.pair == "Lowland-lowland") %>%
-  .[c("site", "pair")] %>%
-  table()
-
-# lowland-highland
-out.mean %>%
-  filter(!is.na(cm.mean)) %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(origin.pair == "Lowland-highland") %>%
-  .[c("site", "pair")] %>%
-  table()
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# plot ndfd by origin pairs
-d.frame <- rbind(data.frame(frame.coex(x1=-3), origin.pair = "Lowland-lowland", elevation ="890"),
-                 data.frame(frame.coex(x1=-3), origin.pair = "Lowland-highland", elevation="1400"),
-                 data.frame(frame.coex(x1=-3), origin.pair = "Highland-highland", elevation ="1900") )
-d.frame$elevation = factor(d.frame$elevation, levels=c("890", "1400", "1900"))
-d.frame$origin.pair = factor(d.frame$origin.pair, levels=c("Lowland-lowland", "Lowland-highland", "Highland-highland"))
-
-d.polygan <- rbind(data.frame(polygan.coex(), origin.pair = "Lowland-lowland"),
-                   data.frame(polygan.coex(), origin.pair = "Lowland-highland"),
-                   data.frame(polygan.coex(), origin.pair = "Highland-highland"))
-d.prio <- rbind(data.frame(polygan.prio(), origin.pair = "Lowland-lowland"),
-                data.frame(polygan.prio(), origin.pair = "Lowland-highland"),
-                data.frame(polygan.prio(), origin.pair = "Highland-highland"))
-d.polygan$origin.pair = factor(d.polygan$origin.pair, levels=c("Lowland-lowland", "Lowland-highland", "Highland-highland"))
-d.prio$origin.pair = factor(d.prio$origin.pair, levels=c("Lowland-lowland", "Lowland-highland", "Highland-highland"))
-
-# ggplot
-fig.outcome.ndfd <- out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  #mutate(nd.mean = ifelse(nd.mean < -3, -3, nd.mean))  %>%
-  mutate(origin.pair = factor(origin.pair, levels = c("Lowland-lowland", "Lowland-highland", "Highland-highland"))) %>%
-  mutate(elevation = factor(elevation, levels = c("890", "1400", "1900"))) %>%
-  ggplot(aes(x = nd.mean, xmin = nd.min, xmax = nd.max,  
-             y = fd.mean, ymin = fd.min, ymax = fd.max,
-             label=pair, col=elevation)) + #col=origin.pair
-  
-  # add polygan
-  geom_polygon(data=d.polygan, aes(x=x,y=y), col="white",fill="grey82", show.legend = FALSE, inherit.aes = FALSE) +
-  geom_polygon(data=d.prio, aes(x=x,y=y), col="white", fill="grey92", show.legend = FALSE, inherit.aes = FALSE) +
-  
-  # add frame
-  geom_line(data=d.frame, aes(x=x, y=y), inherit.aes = FALSE, size=0.3) +
-  geom_line(data=d.frame, aes(x=x, y=-y), inherit.aes = FALSE, size=0.3) +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  
-  # add points
-  geom_point() +
-  geom_errorbar() +
-  geom_errorbarh() +
-  
-  # add pairs
-  #geom_text() +
-  
-  facet_wrap(~origin.pair, scales="free", nrow=1) +
-  #coord_cartesian(xlim=c(-3,1)) +
-  scale_color_manual(values=c("890" = "#FB9A06FF", "1400" = "#6DCD59FF", "1900" = "#3E4A89FF")) +
-  #scale_color_manual(values=c("Lowland-lowland" = "#FB9A06FF", "Lowland-highland" = "#6DCD59FF", "Highland-highland" = "#3E4A89FF")) +
-  scale_x_continuous(name = "Niche difference") +
-  scale_y_continuous(name = "ln(Fitness difference)", labels = scales::number_format(accuracy = 0.1))
-fig.outcome.ndfd
-
 #****************************
 # CM-----
 
@@ -3820,67 +2974,21 @@ hist(out.boot$coexistence.metric, breaks=100,labels = TRUE)
 hist(log(out.boot$coexistence.metric), breaks=100,labels = TRUE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Compare the "real" vs. bootstrap
-bind_cols(cm.real = log(filter(out.boot,bootstrap == 0)$coexistence.metric),  
-          cm.mean.boot = out.mean$cm.mean,
-          cm.min = out.mean$cm.min,
-          cm.max = out.mean$cm.max) %>%
-  filter(!is.infinite(cm.real) & !is.infinite(cm.mean.boot)) %>%
-  ggplot(aes(x=cm.real, y=cm.mean.boot, ymin=cm.min, ymax=cm.max)) +
-  geom_abline(intercept = 0, slope=1, linetype="dashed") +
-  geom_point() +
-  geom_errorbar()
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # test based on mean
-# distribtuions of mean CM
-out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  .$cm.mean %>%
-  #.$coexistence.metric %>%
-  hist(labels=TRUE)
-
-# test based on the mean
 out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  #filter(lambda1 > 1 & lambda2 > 1) %>%
   lmer(cm.mean ~ origin.pair * elevation + (1|pair), data=.) %>%
   Anova()
   summary()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # test for each bootstrap
-out.boot %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  filter(!is.infinite(coexistence.metric)) %>%
-  mutate(cm.log = log(coexistence.metric)) %>% .$cm.log %>%
-  #.$coexistence.metric %>%
-  hist(labels=TRUE)
-
-# lmer test for each bootstrap
 test.cm.boot <- out.boot %>% 
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   filter(!is.infinite(coexistence.metric)) %>%
   mutate(cm.log = log(coexistence.metric)) %>% filter(!is.infinite(cm.log)) %>%
   split(.$bootstrap) %>%
   purrr::map(~lmer(cm.log ~ elevation*origin.pair + (1|pair), data=.)) 
-
-# distribution of P values
-# P values of 100 bootstraps 
-anova.cm.boot <- test.cm.boot %>% purrr::map_dfr(coef.lmer)
-p.value.cm <- anova.cm.boot[(1:500)*3, 3]
-
-fig.cm_pvalue <-  tibble(p.value = p.value.cm, 
-                         bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) +
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, lty="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.cm_pvalue
-
-# 176 bootstraps are significant
-sum(p.value.cm < 0.05)
 
 # coefficient for each bootstrap
 coef.cm.boot <- 
@@ -3948,30 +3056,6 @@ median_ci_quantile(coef.cm.interaction$`elevation:origin.pairLowland-lowland`)
 hist(coef.cm.interaction$`elevation:origin.pairLowland-highland`)
 median_ci_quantile(coef.cm.interaction$`elevation:origin.pairLowland-highland`)
 
-# CI of slopes
-hist(coef.cm.global$slo.highhigh)
-hist(coef.cm.global$slo.lowhigh)
-hist(coef.cm.global$slo.lowlow)
-
-cm.slope.ci.hh <-  median_ci_quantile(coef.cm.global$slo.highhigh)
-cm.slope.ci.lh <- median_ci_quantile(coef.cm.global$slo.lowhigh)
-cm.slope.ci.ll <- median_ci_quantile(coef.cm.global$slo.lowlow)
-
-# combine three types
-cm.slope <- as.data.frame(rbind(cm.slope.ci.hh, cm.slope.ci.lh,cm.slope.ci.ll))
-colnames(cm.slope) <- c("y", "ymin", "ymax")
-cm.slope$origin.pair = c("Highland-highland", "Lowland-highland", "Lowland-lowland")
-cm.slope$origin.pair = factor(cm.slope$origin.pair, levels = c("Lowland-lowland", "Lowland-highland", "Highland-highland") )
-
-fig.cm_slope <- cm.slope %>%
-  ggplot(aes(x=origin.pair, y=y, ymin=ymin, ymax=ymax)) +
-  geom_hline(yintercept = 0,linetype="dashed") +
-  geom_pointrange() +
-  #geom_errorbar() +
-  scale_x_discrete(name="Type of interactions") +
-  scale_y_continuous(name="Slope")
-fig.cm_slope
-
 # add confidecne interval
 # CI of SD
 d.ribbon.cm <- pred.cm %>%
@@ -4002,8 +3086,6 @@ fig.cm_boot <- pred.cm %>%
   geom_ribbon(data=d.ribbon.cm, aes(x=elevation, ymin=ymin, ymax=ymax), alpha=0.4, col="white", show.legend = FALSE) +
   
   # mean points
-  #geom_point(data = out,
-  #            aes(y=cm.mean, x=elevation), col="black", show.legend = FALSE, inherit.aes = FALSE) +
   stat_summary(data = filter(out.mean, (sensitivity.12 != 0.1 & sensitivity.21 != 0.1)),
                aes(y=cm.median, x=elevation), fun.data=mean_se, show.legend = FALSE) +
   
@@ -4021,43 +3103,15 @@ fig.cm_boot
 # ND----
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Compare the "real" vs. bootstrap
-bind_cols(nd.real = filter(out.boot,bootstrap == 0)$nd,  
-          nd.mean = out.mean$nd.mean,
-          nd.median = out.mean$nd.median,
-          nd.min = out.mean$nd.min,
-          nd.max = out.mean$nd.max) %>%
-  filter(!is.infinite(nd.real) & !is.infinite(nd.mean)) %>%
-  ggplot(aes(x=nd.real, y=nd.mean, ymin=nd.min, ymax=nd.max)) +
-  geom_abline(intercept = 0, slope=1, linetype="dashed") +
-  geom_point() +
-  geom_errorbar()
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # test based on mean
-# distribtuions of mean ND
-out.mean %>%
-  filter(!(ID.pair %in% pair.facilitation)) %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  .$nd.mean2 %>%
-  #.$coexistence.metric %>%
-  hist(labels=TRUE)
-
-# test based on the mean
 out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  #filter(lambda1 > 1 & lambda2 > 1) %>%
   lmer(nd.mean2 ~ origin.pair * elevation + (1|pair), data=.) %>%
   Anova()
   summary()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # test for each bootstrap
-# distribtion
-hist(out.boot$nd, breaks=100,labels = TRUE)
-hist(log(1-out.boot$nd), breaks=100,labels = TRUE)
-
-# lmer test for each bootstrap
 test.nd.boot <- out.boot %>% 
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   mutate(no = 1-nd) %>% mutate(nd.log = log(no)) %>% filter(!is.infinite(nd.log)) %>%
@@ -4067,18 +3121,6 @@ test.nd.boot <- out.boot %>%
 # ANOVA
 anova.nd.boot <- test.nd.boot %>% purrr::map_dfr(coef.lmer)
 p.value_nd <- anova.nd.boot[(1:500)*3, 3]
-
-fig.nd_pvalue <-  tibble(p.value = p.value_nd, 
-                         bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) +
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, lty="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.nd_pvalue
-
-# 155 bootstraps were significant
-sum(p.value_nd < 0.05)
 
 # coefficient for each bootstrap
 coef.nd.boot <- test.nd.boot %>% purrr::map(fixef)
@@ -4141,31 +3183,6 @@ median_ci_quantile(coef.nd.interaction$`elevation:origin.pairLowland-lowland`)
 hist(coef.nd.interaction$`elevation:origin.pairLowland-highland`)
 median_ci_quantile(coef.nd.interaction$`elevation:origin.pairLowland-highland`)
 
-# CI of slopes
-hist(coef.nd.global$slo.highhigh)
-hist(coef.nd.global$slo.lowhigh)
-hist(coef.nd.global$slo.lowlow)
-
-# combine three types
-nd.slope.ci.hh <-  median_ci_quantile(coef.nd.global$slo.highhigh)
-nd.slope.ci.lh <- median_ci_quantile(coef.nd.global$slo.lowhigh)
-nd.slope.ci.ll <- median_ci_quantile(coef.nd.global$slo.lowlow)
-
-nd.slope <- as.data.frame(rbind(nd.slope.ci.hh, nd.slope.ci.lh, nd.slope.ci.ll))
-colnames(nd.slope) <- c("y", "ymin", "ymax")
-nd.slope$origin.pair = c("Highland-highland", "Lowland-highland", "Lowland-lowland")
-nd.slope$origin.pair = factor(nd.slope$origin.pair, levels = c("Lowland-lowland", "Lowland-highland", "Highland-highland"))
-
-fig.nd_slope <- nd.slope %>%
-  ggplot(aes(x=origin.pair, y=y, ymin=ymin, ymax=ymax)) +
-  geom_hline(yintercept = 0,linetype="dashed") +
-  #geom_point() +
-  geom_pointrange() +
-  #geom_errorbar() +
-  scale_x_discrete(name="Type of interactions") +
-  scale_y_continuous(name="Slope")
-fig.nd_slope
-
 # plot with CI
 # add mean trend
 coef.nd.mean = apply(coef.nd.global,2,mean)[2:7]
@@ -4196,8 +3213,6 @@ fig.nd_boot <- pred.nd %>%
   geom_ribbon(data=d.ribbon.nd, aes(x=elevation, ymin=ymin, ymax=ymax), alpha=0.4, col="white", show.legend = FALSE) +
   
   # mean points
-  #geom_point(data = out,
-  #aes(y=nd.mean2, x=elevation), col="black", show.legend = FALSE, inherit.aes = FALSE) +
   stat_summary(data = filter(out.mean,  (sensitivity.12 != 0.1 & sensitivity.21 != 0.1)),
                aes(y=nd.mean2, x=elevation), fun.data = mean_se, show.legend = FALSE) +
   
@@ -4213,43 +3228,10 @@ fig.nd_boot
 
 #****************************
 # FD----
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# distributions
-hist(log(out.boot$fd.highlow), breaks=100,labels = TRUE)
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Compare the "real" vs. bootstrap
-bind_cols(fd.real = log(filter(out.boot,bootstrap == 0)$fd.highlow),  
-          fd.mean = out.mean$fd.mean,
-          fd.median = out.mean$fd.median,
-          fd.min = out.mean$fd.min,
-          fd.max = out.mean$fd.max) %>%
-  filter(!is.infinite(fd.real) & !is.infinite(fd.mean)) %>%
-  ggplot(aes(x=fd.real, y=fd.mean, ymin=fd.min, ymax=fd.max)) +
-  geom_abline(intercept = 0, slope=1, linetype="dashed") +
-  geom_point() +
-  geom_errorbar()
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # test based on mean
-# plot
-out.mean %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  ggplot(aes(x=elevation, y = fd.mean2, label=pair)) +
-  geom_point() +
-  stat_summary(col="red") +
-  geom_text() +
-  geom_line(aes(group=pair)) +
-  facet_wrap(~origin.pair)
 
 # overall
-out.mean %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  .$fd.mean2 %>%
-  #.$coexistence.metric %>%
-  hist(labels=TRUE)
-
 out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   lmer(abs(fd.mean2) ~ origin.pair * elevation + (1|pair), data=.) %>%
@@ -4258,12 +3240,6 @@ out.mean %>%
 
 # high-high
 out.mean %>%
-  filter(origin.pair %in% c("Highland-highland")) %>%
-  .$fd.mean2 %>%
-  abs() %>%
-  hist(labels=TRUE)
-
-out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   filter(origin.pair %in% c("Highland-highland")) %>%
   lmer(abs(fd.mean2) ~ elevation + (1|pair), data=.) %>%
@@ -4271,11 +3247,6 @@ out.mean %>%
   summary()
 
 # low-low
-out.mean %>%
-  filter(origin.pair %in% c("Lowland-lowland")) %>%
-  .$fd.mean2 %>%
-  hist(labels=TRUE)
-
 out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   filter(origin.pair %in% c("Lowland-lowland")) %>%
@@ -4287,40 +3258,12 @@ out.mean %>%
 out.mean %>%
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   filter(origin.pair %in% c("Lowland-highland")) %>%
-  .$fd.mean %>%
-  hist(labels=TRUE)
-
-out.mean %>%
-  filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
-  filter(origin.pair %in% c("Lowland-highland")) %>%
   lmer(fd.mean ~ elevation + (1|pair), data=.) %>%
   Anova()
   summary()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # lmer test for each bootstrap
-# distribution of bootstrapped FD
-out.boot %>%
-  #filter(origin.pair == "Lowland_Lowland") %>%
-  #filter(origin.pair =="Lowland_Highland") %>%
-  #filter(origin.pair =="Lowland_Highland") %>%
-  .$fd.highlow %>%
-  log() %>%
-  hist(labels=TRUE)
-
-# FD
-fd.i <- mean_ci_quantile(log(out.i$fd.highlow))
-out.mean[i, "fd.mean"] = fd.i$y
-out.mean[i, "fd.median"] = median_ci_quantile(log(out.i$fd.highlow))$y
-out.mean[i, "fd.mean2"] = fd.i$y
-out.mean[i, "fd.min"] = fd.i$ymin
-out.mean[i, "fd.max"] = fd.i$ymax
-out.mean[i, "fd.sample"] = sum(!is.na(log(out.i$fd.highlow)))
-
-if(di$origin.pair %in% c("Highland-highland", "Lowland-lowland")) {
-  out[i, "fd.mean2"] = mean_ci_quantile(abs(log(out.i$fd.highlow)))$y
-}
-
 #~~~~~~~~~~~~~~~~~~~~~~~~
 # high-high
 test.fd.boot_hh <- out.boot %>% 
@@ -4329,24 +3272,7 @@ test.fd.boot_hh <- out.boot %>%
   mutate(fd.log = abs(log(fd.highlow))) %>%
   filter(!is.infinite(fd.log)) %>%
   split(.$bootstrap) %>%
-  #purrr::map(nrow)
   purrr::map(~lmer(fd.log ~ elevation + (1|pair), data=.)) 
-
-# distribution of p values
-anova.fd.boot_hh <- test.fd.boot_hh %>% purrr::map_dfr(coef.lmer)
-p.value.fd_hh <- anova.fd.boot_hh[,3]
-
-fig.fd_pvalue_hh <-  tibble(p.value = p.value.fd_hh, 
-                            bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) +
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, lty="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.fd_pvalue_hh
-
-# 157 significant
-sum(p.value.fd_hh < 0.05)
 
 # coefficients
 # -0.0002271186 -0.0006686035 0.000119544
@@ -4365,24 +3291,7 @@ test.fd.boot_lh <- out.boot %>%
   mutate(fd.log = log(fd.highlow)) %>%
   filter(!is.infinite(fd.log)) %>%
   split(.$bootstrap) %>%
-  #purrr::map(nrow)
   purrr::map(~lmer(fd.log ~ elevation + (1|pair), data=.)) 
-
-# distribution of p values
-anova.fd.boot_lh <- test.fd.boot_lh %>% purrr::map_dfr(coef.lmer)
-p.value.fd_lh <- anova.fd.boot_lh[,3]
-
-fig.fd_pvalue_lh <-  tibble(p.value = p.value.fd_lh, 
-                            bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) +
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, lty="dashed") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.fd_pvalue_lh
-
-# 78 significant
-sum(p.value.fd_lh < 0.05) 
 
 # coefficients
 # 0.0001346951 -0.0002440668 0.0005411766
@@ -4397,29 +3306,10 @@ coef.fd.boot_lh <- test.fd.boot_lh %>%
 test.fd.boot_ll <- out.boot %>% 
   filter(sensitivity.12 != 0.1 & sensitivity.21 != 0.1) %>%
   filter(origin.pair == "Lowland-lowland") %>%
-  #filter(!(outcome.igr == "Priority effect" & outcome.ndfd == "Coexistence")) %>%
-  #filter(!(outcome.igr == "Competitive exclusion" & outcome.ndfd == "Coexistence")) %>%
-  #filter(fd.highlow < 10) %>%
   mutate(fd.log = abs(log(fd.highlow))) %>%
   filter(!is.infinite(fd.log)) %>%
   split(.$bootstrap) %>%
   purrr::map(~lmer(fd.log ~ elevation + (1|pair), data=.)) 
-
-# distribution of p values
-anova.fd.boot_ll <- test.fd.boot_ll %>% purrr::map_dfr(coef.lmer)
-p.value.fd_ll <- anova.fd.boot_ll[,3]
-
-fig.fd_pvalue_ll <-  tibble(p.value = p.value.fd_ll, 
-                            bootstrap = 1:500) %>%
-  ggplot(aes(p.value)) +
-  geom_histogram(fill="grey60") +
-  geom_vline(xintercept = 0.05, lty="dashed", col="black") +
-  scale_x_continuous(name="P values of 100 bootstraps") +
-  scale_y_continuous(name="Number of bootstraps")
-fig.fd_pvalue_ll
-
-# 35 significant
-sum(p.value.fd_ll < 0.05)
 
 # coefficients
 # -6.382185e-05 -0.0003379845 0.0001890299
@@ -4526,8 +3416,6 @@ fig.fd_boot <- pred.fd %>%
   geom_ribbon(data=d.ribbon.fd, aes(x=elevation, ymin=ymin, ymax=ymax), alpha=0.4, col="white", show.legend = FALSE) +
   
   # mean points
-  #geom_point(data = filter(out.mean,(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)),
-  #         aes(y=fd.mean2, x=elevation), col="black", show.legend = FALSE, inherit.aes = FALSE) +
   stat_summary(data = filter(out.mean,(sensitivity.12 != 0.1 & sensitivity.21 != 0.1)),
                aes(y=fd.mean2, x=elevation),fun.data=mean_se, show.legend = FALSE) +
   
@@ -4550,77 +3438,6 @@ fig.fd_boot
 
 #****************************************************
 # ** - Figure 1: Population growth rate ####
-
-# intrinsic growth rates
-fig.pgr.intrinsic_se +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
-fig.pgr.intrinsic_boot +
-  coord_cartesian(ylim=c(-2,2.5)) +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        legend.position = "none",
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
-fig.pgr.intrinsic_p.value +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
-fig.pgr.intrinsic_slope +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
-# Invasion growth rates 
-fig.pgr.invasion_se +
-  coord_cartesian(ylim=c(-1.5,2.5)) +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
-fig.pgr.invasion_boot +
-  coord_cartesian(ylim=c(-2,2.5)) +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        legend.position = "none")
-
-fig.pgr.invasion_slope +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside")
-
 # Combined
 p <- fig.pgr_boot +
   theme_classic2(base_family = "Arial") +
@@ -4631,67 +3448,10 @@ p <- fig.pgr_boot +
         strip.placement = "outside",
         panel.grid.major = element_line(colour="grey90"),
         legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.1.pdf", device = cairo_pdf, 
-       width = 5.81, height = 3.26, units = "in")
 
 #****************************************************
 # ** - Figure 2: coexistence outcomes across sites ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# NDFD
-fig.outcome.ndfd_arrow +
-  coord_cartesian(xlim=c(-2,1)) +
-  theme_bw() +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=12),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        legend.position = "none")
-
-p <- fig.outcome.ndfd + 
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=8),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=10),
-        strip.placement = "outside",
-        legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.2a_CI.pdf", device = cairo_pdf, 
-       width = 7.35, height = 2.80, units = "in")
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# show 3 outcomes
-p <- fig.outcome.igr_3outcomes +
-  theme_bw() +
-  theme(axis.text=element_text(size=8),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=10),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.2_3outcomes.pdf", device = cairo_pdf, 
-       width = 7.35, height = 2.80, units = "in")
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Proportion of coexistence
-p <- fig.outcome.igr_prop +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=11),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-p 
-ggsave(p, filename = "/Users/slyu/Downloads/fig.2a.pdf", device = cairo_pdf, 
-       width = 6.43, height = 2.42, units = "in")
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # show 2 outcomes
 p <- fig.outcome.igr_2outcomes +
@@ -4703,9 +3463,6 @@ p <- fig.outcome.igr_2outcomes +
         strip.placement = "outside",
         panel.grid.major = element_line(colour="grey90"),
         legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.2a.pdf", device = cairo_pdf, 
-       width = 6.43, height = 2.42, units = "in")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # CM
@@ -4717,33 +3474,6 @@ p <- fig.cm_boot +
         strip.text = element_text(size=11),
         strip.placement = "outside",
         panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.2b.pdf", device = cairo_pdf, 
-       width = 6.43, height = 2.42, units = "in")
-
-p <- fig.cm_pvalue +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.3_cm_p.pdf", device = cairo_pdf, 
-       width = 2.75, height = 2.52, units = "in")
-
-fig.cm_slope +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
         legend.position = "none")
 
 #****************************************************
@@ -4761,34 +3491,6 @@ p <- fig.nd_boot +
         strip.placement = "outside",
         panel.grid.major = element_line(colour="grey90"),
         legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.3a.pdf", device = cairo_pdf, 
-       width = 6.43, height = 2.42, units = "in")
-
-p <- fig.nd_pvalue +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=8),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=10),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.3_nd_p.pdf", device = cairo_pdf, 
-       width = 2.75, height = 2.52, units = "in")
-
-fig.nd_slope +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        legend.position = "none")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # fd
@@ -4802,230 +3504,4 @@ p <- fig.fd_boot +
         strip.placement = "outside",
         panel.grid.major = element_line(colour="grey90"),
         legend.position = "none")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.3b.pdf", device = cairo_pdf, 
-       width = 6.43, height = 2.42, units = "in")
-
-fig.fd_pvalue_ll +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-
-fig.fd_pvalue_lh +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-
-fig.fd_pvalue_hh +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "none")
-
-fig.cm_slope +
-  theme_bw(base_family = "Arial") +
-  theme(axis.text=element_text(size=12),
-        axis.title=element_text(size=14),
-        strip.background = element_blank(),
-        strip.text = element_text(size=13),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        legend.position = "none")
-
-#****************************************************
-# 8. Supplementary figures -----
-#****************************************************
-#*********************************************
-
-#*********************************************
-# ** - Vital rates ----
-# Survival
-p <- fig.survival +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_survival.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# Growth
-p <- fig.growth +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_growth.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# Flowering
-p <- fig.flowering +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_flowering.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# Fecundity
-p <- fig.fecundity +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_fecundity.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# germination
-p <- fig.germination +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_germination.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# intrinsic establishment
-p <-  fig.establish.fun +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_establishment_non.comp.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-
-# establishment under competition
-p <- fig.establish.competition +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_establishment_comp.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-# seedling size
-p <- fig.recruit +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "null")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s4_seedling.pdf", device = cairo_pdf, 
-       width = 9.17, height = 3.25, units = "in")
-
-#*********************************************
-# ** - Intraspecific invasion grwoth rate ----
-p <- fig.pgr.intra_ci_focal +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        #strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = "right")
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s5.pdf", device = cairo_pdf, 
-       width = 8.33, height = 3, units = "in")
-
-#*********************************************
-# ** - lambdas of each focal species ----
-p <- fig.pgr_focal +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = c(0.8,0.1))
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.s6.pdf", device = cairo_pdf, 
-       width = 7.5, height = 7.84, units = "in")
-
-#*********************************************
-# ** - sensitivity ----
-p <- fig.sensitivity +
-  theme_classic2(base_family = "Arial") +
-  theme(axis.text=element_text(size=10),
-        axis.title=element_text(size=12),
-        strip.background = element_blank(),
-        strip.text = element_text(size=11),
-        strip.text.x = element_text(hjust = 0),
-        strip.placement = "outside",
-        panel.grid.major = element_line(colour="grey90"),
-        legend.position = c(0.8,0.1))
-p
-ggsave(p, filename = "/Users/slyu/Downloads/fig.sensitivity.pdf", device = cairo_pdf, 
-       width = 6.08, height = 3.22, units = "in")
-
-
-
-
 
