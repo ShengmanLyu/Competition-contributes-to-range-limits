@@ -1,7 +1,8 @@
 #*******************************************************************************
 # IPM using log(size) -----
 # 2022.01.13
-# update: 
+# See more detail in the manuscript "Competition contributes to both warm and cold range edges"
+# E-mail:shengman.lyu@usys.ethz.ch
 #*******************************************************************************
 rm(list=ls())
 
@@ -651,7 +652,6 @@ aic.best.funiche <- bind_rows(aic.ger.best, aic.est.best)
 #****************************************************************************
 # ** - 3.1 Vital rates models: fitting and bootstrap ** ------
 #****************************************************************************
-
 rm(list=ls())
 # NICH data
 # load functions
@@ -1102,7 +1102,7 @@ for(n in 1:nrow(vr)) {
     rm(lm.siz.gr); rm(lm.siz)
   }
   print("size range")
-} # for loop
+}
 
 #****************************************************************************
 # ** - 3.2 Species and site level vital rates ------
@@ -1489,19 +1489,10 @@ for(n in 1:nrow(vr)) {
   #d$background.species <- relevel(d$background.species, ref=bg)
   d$site <- relevel(d$site, ref=st)
   
-  ## **** - 3.3.1 survival -----------------------------------------------------
-  
+  ## **** - 3.3.1 survival -----------------------------------------------------  
   ## **** - 3.3.2 growth-----------------------------------------------------
-  # SD of growth
-  #if(!is.na(vi$pair) & !is.na(vi$growth.int) & is.na(vi$growth.sd) ) {
-  #  vr[n, "growth.sd"] <- 0.01
-  #  vr.boot[n, match("growth.sd", colnames(vr)), 1:nboot] = 0.01
-  #}
-  
   ## **** - 3.3.3 flowering -----------------------------------------------------
-  
   ## **** - 3.3.4 fecundity -----------------------------------------------------
-  
   ## **** - 3.3.5 germination ------
   # Daca germination establishment and estiablishment-FuNiche
   if(!is.na(fc) & fc == "Daca" & !is.na(vi$pair) & vi$pair != "no") {
@@ -1537,7 +1528,7 @@ for(n in 1:nrow(vr)) {
       print(paste(fc,st,bg, sep="_"))
     }
   }
-  ## **** - 3.3.6 size range: plots transplanted in 2018!----
+  ## **** - 3.3.6 size range ----
 } 
 
 #****************************************************************************
@@ -1882,7 +1873,7 @@ vr.eviction$p_eviction_recruit_upper = as.numeric(NA)
 vr.eviction$p_eviction_growth_lower = as.numeric(NA)
 vr.eviction$p_eviction_growth_upper = as.numeric(NA)
 
-for(i in 2:nrow(vr.eviction)) {
+for(i in 1:nrow(vr.eviction)) {
   # i = 2
   vr.i <- vr.eviction[i,]
   if(is.na(vr.i$pgr) | vr.i$background.species %in% c("site", "site_none", "species", "species_none")) {
@@ -1896,46 +1887,10 @@ for(i in 2:nrow(vr.eviction)) {
     vr.eviction[i,"p_eviction_recruit_upper"] <- eviction.test.i$p_eviction_recruit$p_eviction_recruit_upper
 
     # growth
-    # plot
-    #ggplot(eviction.test.i$p_eviction_growth, aes(x=z, y = p_eviction_growth_lower)) + geom_point()
-    #ggplot(eviction.test.i$p_eviction_growth, aes(x=z, y = p_eviction_growth_upper)) + geom_point()
     vr.eviction[i,"p_eviction_growth_lower"] <- mean(eviction.test.i$p_eviction_growth$p_eviction_growth_lower)
     vr.eviction[i,"p_eviction_growth_upper"] <- mean(eviction.test.i$p_eviction_growth$p_eviction_growth_upper)
   }
 }
-
-# recruit
-# upper bound: is fine
-r.upper <- vr.eviction %>% 
-  filter(pair == "yes") %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  .$p_eviction_recruit_upper
-hist(r.upper)
-
-# lower bound
-r.lower <- vr.eviction %>% 
-  filter(pair == "yes") %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  .$p_eviction_recruit_lower
-hist(r.lower)
-
-# growth
-# lower bound
-g.lower <- vr.eviction %>% 
-  filter(pair == "yes") %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  .$p_eviction_growth_lower
-hist(g.lower)
-
-# upper bound
-g.upper <- vr.eviction %>% 
-  filter(pair == "yes") %>%
-  filter(!(background.species %in% c("site","site_none","species", "species_none"))) %>%
-  .$p_eviction_growth_upper
-hist(g.upper)
-
-# mean
-mean(c(r.upper, r.lower, g.lower, g.upper))
 
 #****************************************************************************
 # ** - 4.2 Compare population grwoth rates with vs without ceiling ------
@@ -2039,13 +1994,6 @@ lambda.boot <- function(a) {
 }
 
 pgr.bootstrap <- mclapply(n.seq, lambda.boot, mc.cores = n.cores)
-pgr.bootstrap
-
-# output
-# save(pgr.bootstrap, file="/cluster/home/slyu/ipm_bootstrap_20220121/lambda_bootstrap.RData")
-
-#save.image("/Users/slyu/LVSM/NICH/Results/IPM_bootstrap/ipm_bootstrap_image_20210315.RData")
-#save(p, file="pgr_boot_20210315.R")
 
 #****************************************************************************
 # ** - 4.5 combine bootstrapped vital rates and lambdas ------
@@ -2053,12 +2001,12 @@ pgr.bootstrap
 rm(list=ls())
 
 # bootstraped vital rates 
-vr.boot <- read_csv("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/vr.bootstrap_20220121.csv")
+vr.boot <- read_csv("vr.bootstrap_20220121.csv")
 vr.boot$pgr <- as.numeric(NA)
 vr.boot
 
 # bootstraped lambdas
-load("/Users/slyu/LVSM/NICH/Results/IPM_log.size/vital.rate/lambda_bootstrap.RData")
+load("lambda_bootstrap.RData")
 length(pgr.bootstrap)
 
 # combine bootstraped vital rates and lambdas
@@ -2081,7 +2029,7 @@ for(i in 1:nrow(vr.boot)) {
 rm(list=ls())
 
 # functions
-source("/Users/slyu/LVSM/R codes/NICH_coexistence_IPM_functions.R")
+source("NICH_coexistence_IPM_functions.R")
 
 # bootstraped lambdas 
 vr.boot <- read_csv("SD2_lambda.only_bootstrap.csv", na="NA", col_names = TRUE)
@@ -2384,26 +2332,6 @@ fig.pgr.intra_ci_focal
 # 11/34 (32%)intrinsic PGR have 95 CIs including zero, i.e., equilibrium
 # 18/34 (53%) intrinsic PGR have 95 CIs including (-0.1, 0.1)
 # 26/34 (76%) intrinsic PGR have 95 CIs of lambda including (0.5, 1.5)
-d.temp <- vr.mean %>%
-  filter(background.species == focal.species) %>% 
-  mutate(focal.species = factor(focal.species, levels=c("Anal","Armo","Asal","Plal", "Poal", "Seca", "Trba",    # 7 alpine species
-                                                        "Brer", "Crbi", "Daca","Melu" , "Plla", "Potr", "Sapr"))) %>% # 7 lowland species
-  .$pgr.log.median
-
-d.temp1 <- vr.mean %>%
-  filter(background.species == focal.species) %>% 
-  mutate(focal.species = factor(focal.species, levels=c("Anal","Armo","Asal","Plal", "Poal", "Seca", "Trba",    # 7 alpine species
-                                                        "Brer", "Crbi", "Daca","Melu" , "Plla", "Potr", "Sapr"))) %>% # 7 lowland species
-  .$pgr.log.ci.min
-
-d.temp2 <- vr.mean %>%
-  filter(background.species == focal.species) %>% 
-  mutate(focal.species = factor(focal.species, levels=c("Anal","Armo","Asal","Plal", "Poal", "Seca", "Trba",    # 7 alpine species
-                                                        "Brer", "Crbi", "Daca","Melu" , "Plla", "Potr", "Sapr"))) %>% # 7 lowland species
-  .$pgr.log.ci.max
-
-sum(!is.na(d.temp))
-sum(d.temp1 < 0 & d.temp2 > 0, na.rm = TRUE)
 
 #***********************************************
 # 10 intra-PGRs were predicted to be over equilibrium
@@ -2414,13 +2342,6 @@ sum(d.temp1 < 0 & d.temp2 > 0, na.rm = TRUE)
 #****************************************************************************
 #***********************************************
 # invasion PGR based on mean and SE
-# distribution of invasion grwoth rates
-vr.mean %>%
-  filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
-  .$pgr.log.median %>%
-  hist()
-
-# test
 test.pgr.invasion <- vr.mean %>%
   filter(!(background.species %in% c("none","site","site_none","species", "species_none"))) %>%
   filter(pair == "yes") %>%
@@ -2584,7 +2505,6 @@ fig.pgr_boot
 #*************************************************
 # ** - 6.1 Calculate sensitivity -------
 #*************************************************
-# make columns for sensitivity
 # Intrinsic lambdas
 vr.intrinsic <- filter(vr.boot, background.species == "none")
 vr.intrinsic$ID_focal.species <- paste(vr.intrinsic$focal.species, vr.intrinsic$site, vr.intrinsic$bootstrap)
@@ -2687,8 +2607,6 @@ for(a in 1:nrow(out.boot)) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # coexistence by IGR
   si <- coex.igr(sps1, sps2, igr1, igr2, igr12, igr21)
-  #s12 <- si$sensitivity[1]
-  #s21 <- si$sensitivity[2]
   
   out.boot[a,"sensitivity.12"] <- s12
   out.boot[a,"sensitivity.21"] <- s21
@@ -2708,27 +2626,7 @@ for(a in 1:nrow(out.boot)) {
   out.boot[a, "outcome.ndfd"] <- ni$outcome[1]
   out.boot[a, "winner.ndfd"] <- ni$winner[1]
   out.boot[a, "superior.ndfd"] <- ni$superior[1]
-  
-  # FD highland/lowland
-  if(origin1 == "Lowland" & origin2 == "Highland") out.boot[a, "fd.highlow"] <- 1/ni$ndfd[2]
-  else out.boot[a, "fd.highlow"] <- ni$ndfd[2]
-  
-  # superior origin
-  if(ni$superior[1] == "sps1") out.boot[a, "origin.superior"] <- origin1
-  else out.boot[a, "origin.superior"] <- origin2
-  
-  # whether faster-grower is superior? site level
-  if(out.boot[a, "superior.ndfd"] == out.boot[a,"superior.lambda"]) out.boot[a, "superior.fast"] = "yes"
-  else out.boot[a, "superior.fast"] = "no"
-  
-  # whether faster-grower is superior? species level
-  if(out.boot[a, "superior.ndfd"] == out.boot[a,"superior.lambda.sps"]) out.boot[a, "superior.fast.sps"] = "yes"
-  else out.boot[a, "superior.fast.sps"] = "no"
-  
-  # FD fast-growing/slow-growing
-  if(out.boot[a,"superior.lambda.sps"] == "sps1") out.boot[a,"fd.fastslow"] = ni$ndfd[2]
-  else out.boot[a,"fd.fastslow"] = 1/ni$ndfd[2]
-  
+    
   ni <- NULL
   print(a)
 }
