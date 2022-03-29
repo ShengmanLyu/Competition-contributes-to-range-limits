@@ -1,5 +1,5 @@
-## R scripts used for modelling and statistical analyses in the manuscript "Competition contributes to both warm and cool range edges"
-### The data used for analyses can be found on Figshare: https://figshare.com/s/cb9e034633f47739466b
+## R scripts used for modelling and statistical analyses in "Competition contributes to both warm and cool range edges"
+### The data used for analyses can be found at: Lyu, Shengman; Alexander, Jake (2022): Competition contributes to both warm and cool range edges. figshare. Dataset. https://doi.org/10.6084/m9.figshare.19108127.v1 
 ### This repository includes two R files.
 ### R sessionInfo()
 R version 4.0.3 (2020-10-10)
