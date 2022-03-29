@@ -1,6 +1,6 @@
 ## R scripts used for modelling and statistical analyses in "Competition contributes to both warm and cool range edges"
 ### The data used for analyses can be found on Figshare: 
-#### Lyu, Shengman; Alexander, Jake (2022): Competition contributes to both warm and cool range edges. figshare. Dataset. https://doi.org/10.6084/m9.figshare.19108127.v1 
+#### Lyu, Shengman; Alexander, Jake (2022): Competition contributes to both warm and cool range edges. figshare. Dataset. [![DOI](https://doi.org/10.6084/m9.figshare.19108127.v1)](https://doi.org/10.6084/m9.figshare.19108127.v1) 
 ### This repository includes two R files that are archived on Zenodo:
 [![DOI](https://zenodo.org/badge/438038961.svg)](https://zenodo.org/badge/latestdoi/438038961)
 ### R sessionInfo()
