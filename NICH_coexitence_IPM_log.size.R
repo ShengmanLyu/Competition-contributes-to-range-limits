@@ -27,7 +27,7 @@ rm(list=ls())
 source("NICH_coexistence_IPM_functions.R")
 
 # NICH data
-# The data can be found at: https:// github.com/ShengmanLyu/competition-contributes-to-range-limits
+# The data can be found at: https:// github.com/ShengmanLyu/competition-contributes-to-range-limits/data_181920_v6.xlsx
 d <- read_excel("data_181920_v6.xlsx", na="NA",col_names = TRUE)
 d
 # remove seedling planted in autumn 2019 because mostly of them died: 16755
