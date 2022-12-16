@@ -1,4 +1,8 @@
-## R scripts used for modelling and statistical analyses in "Competition contributes to both warm and cool range edges"
+# R scripts used for modelling and statistical analyses in Lyu & Alexander 2022.
+
+### More detailed information on the data, modelling and statistical analyses can be found: 
+Lyu, S. and J. M. Alexander (2022). "Competition contributes to both warm and cool range edges." Nature Communications 13(1): 2502.
+https://www.nature.com/articles/s41467-022-30013-3
 
 ### The data used for analyses can be found on Figshare: 
 #### Lyu, Shengman; Alexander, Jake (2022): Competition contributes to both warm and cool range edges. figshare. Dataset. https://doi.org/10.6084/m9.figshare.19108127.v1
