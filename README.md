@@ -2,7 +2,7 @@
 
 #### data_181920_v6.xlsx
 
-> The raw data (individual-based demographic data) is used to estimate vital rate parameters (except for seed germination and competition-free seedling establishment) and parameterise the integral projection models.
+> The raw data (individual-based demographic data) is used to estimate vital rates (except seed germination and competition-free seedling establishment) and parameterise the integral projection models.
 
 #### FunNiche Seed Counts.xlsx; FunNiche_data_2019_2020_dec2020.xlsx
 
