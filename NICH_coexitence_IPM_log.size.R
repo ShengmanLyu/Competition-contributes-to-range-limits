@@ -1,8 +1,9 @@
 #*******************************************************************************
-# IPM using log(size) -----
-# 2022.01.13
-# See more detail in the manuscript "Competition contributes to both warm and cold range edges"
-# E-mail:shengman.lyu@usys.ethz.ch
+# R codes used for IPM and data analyses and visualisation
+# Author: Shengman Lyu
+# E-mail:shengman.lyu@gmail.com
+# Data updated: 21.12.2022
+# See more detail in Lyu, S. and J. M. Alexander (2022). "Competition contributes to both warm and cool range edges." Nature Communications 13(1): 2502.
 #*******************************************************************************
 rm(list=ls())
 
@@ -24,6 +25,7 @@ rm(list=ls())
 
 # ** - 1.0 read data---------------------------------------
 # load functions
+# The file can be found at: https:// github.com/ShengmanLyu/competition-contributes-to-range-limits
 source("NICH_coexistence_IPM_functions.R")
 
 # NICH data
