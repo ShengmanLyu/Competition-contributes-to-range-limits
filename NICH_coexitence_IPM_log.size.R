@@ -1,8 +1,8 @@
 #*******************************************************************************
-# R codes used for IPM and data analyses and visualisation
+# R codes used for IPM, statistical analyses and visualisation
 # Author: Shengman Lyu
-# E-mail:shengman.lyu@gmail.com
-# Data updated: 21.12.2022
+# E-mail: shengman.lyu@gmail.com
+# Date updated: 21.12.2022
 # See more detail in Lyu, S. and J. M. Alexander (2022). "Competition contributes to both warm and cool range edges." Nature Communications 13(1): 2502.
 #*******************************************************************************
 rm(list=ls())
