@@ -1,10 +1,10 @@
 #*****************************************************************************
-# Functions ----
-# Shengman Lyu
-# Update 2022.01.13
-# See more detail in the manuscript "Competition contributes to both warm and cold range edges"
-# E-mail:shengman.lyu@usys.ethz.ch
-#*****************************************************************************
+# Functions
+# Author: Shengman Lyu
+# E-mail:shengman.lyu@gmail.com
+# Data updated: 21.12.2022
+# See more detail in Lyu, S. and J. M. Alexander (2022). "Competition contributes to both warm and cool range edges." Nature Communications 13(1): 2502.
+#*******************************************************************************
 
 # The codes provided here define functions used for 
 #  - vital rate model disagnostics
@@ -15,7 +15,6 @@
 #  - perturbation analyses of IPM: sensitivity, elasticity, life-table response experiment, vital rate replacement analyses
 #  - coexistence analyses: coexistence outcomes, niche differences, relative fitness differences
 #  - statistical analyses: different types of confidence intervals
-
 
 #************************************************************
 # ****** Load R packages ******----
@@ -707,176 +706,6 @@ eviction_delta.lambda = function(growthKernel = NA, kernel = NA, survivalFunctio
               lambda2=lambda2,dlambda=lambda2-lambda,
               dlambdaU=dlambdaU,dlambdaL=dlambdaL))
 }
-
-#************************************************************
-# ****** Functions for IPM perturbation analyses ******----
-#************************************************************
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform matrix-level sensitivity, elasticity analyses ----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-elasticity.k <- function(k) {
-  # k: full kernel of an IPM
-  # right eigenvalue
-  w.eigen=Re(eigen(K)$vectors[,1])
-  # stable size distribution
-  stable.dist=w.eigen/sum(w.eigen) 
-  # left eigenvalue
-  v.eigen=Re(eigen(t(K))$vectors[,1])
-  # reproductive value when population is stable?
-  repro.val=v.eigen/v.eigen[1]  
-  
-  # elasticity and sensitivity matrices
-  v.dot.w=sum(stable.dist*repro.val)*h
-  # sensitivity matrix
-  sens=outer(repro.val,stable.dist)/v.dot.w
-  # elasticity matrix
-  elas=matrix(as.vector(sens)*as.vector(K)/lam,nrow=n)
-  
-  return(list(sensitivty=sens, elasticity = elas))
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform vital rate-level sensitivity, elasticity analyses ----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-elasticity.vr <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
-  # params: paramters of vital rates in an IPM
-  # lambda.true: actural population growth rate of the IPM
-  # vital.rate: vital rates of interest (of which caclcate sensitivity and elastivity)
-  # delta: the perturbation of vital rates
-  
-  nvr = length(vital.rate) # number of vital rates
-  sens = numeric(nvr); names(sens) = vital.rate # vector to hold parameter sensitivities
-  
-  for(i in 1:nvr){ 
-    m.par = params
-    vr.i <- vital.rate[i]
-    print(vr.i)
-    
-    # IPM down
-    #m.par[vr.i] = m.par[vr.i] - delta
-    #IPM.down = mk.kernel(par=m.par, L = as.numeric(m.par["L"]), U=as.numeric(m.par["U"]), ...)
-    # IPM.down = mk_K_ceiling(m.par=m.par, L = m.par["L"], U=m.par["U"], ...) # IPM course
-    #lambda.down = lambda.k(IPM.down$K)
-    
-    # IPM up
-    m.par[vr.i]=m.par[vr.i] + 1*delta
-    IPM.up = mk.kernel(par=m.par, L = as.numeric(m.par["L"]), U=as.numeric(m.par["U"]), ...)
-    #IPM.up = mk_K_ceiling(m.par=m.par, L = m.par["L"], U=m.par["U"], ...) # IPM course
-    if(sum(is.na(IPM.up$K))>0 | sum(is.infinite(IPM.up$K))>0) {warning("failed to calculare lambda"); print(vr.i); next}
-    lambda.up = lambda.k(IPM.up$K)
-    
-    # calculate sensitivity
-    si = (lambda.up-lambda.true)/(1*delta) 
-    sens[i]=si 
-  }   
-  # calculate elasticity: do I have to ca
-  elas = sens*abs(params[vital.rate])/lambda.true; names(elas) = vital.rate
-  
-  return(list(sensitivty = sens, elastivity = elas))
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform parameter-level sensitivity, elasticity analyses ----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-elasticity.par <- function(params, lambda.true, vital.rate, delta=0.01, ...) {
-  # params: paramters of vital rates in an IPM
-  # lambda.true: actural population growth rate of the IPM
-  # vital.rate: vital rates of interest (of which caclcate sensitivity and elastivity)
-  # delta: the perturbation of vital rates
-  
-  nvr = length(vital.rate) # number of vital rates
-  sens = numeric(nvr); names(sens) = vital.rate # vector to hold parameter sensitivities
-  
-  for(i in 1:nvr){ 
-    m.par = params
-    vr.i <- vital.rate[i]
-    print(vr.i)
-    
-    # IPM down
-    #m.par[vr.i] = m.par[vr.i] - delta
-    #IPM.down = mk.kernel(par=m.par, L = as.numeric(m.par["L"]), U=as.numeric(m.par["U"]), ...)
-    # IPM.down = mk_K_ceiling(m.par=m.par, L = m.par["L"], U=m.par["U"], ...) # IPM course
-    #lambda.down = lambda.k(IPM.down$K)
-    
-    # IPM up
-    m.par[vr.i]=m.par[vr.i] + 1*delta
-    IPM.up = mk.kernel(n=3000, par=m.par, L = as.numeric(m.par["L"]), U=as.numeric(m.par["U"]), ...)
-    #IPM.up = mk_K_ceiling(m.par=m.par, L = m.par["L"], U=m.par["U"], ...) # IPM course
-    if(sum(is.na(IPM.up$K))>0 | sum(is.infinite(IPM.up$K))>0) {warning("failed to calculare lambda"); print(vr.i); next}
-    lambda.up = lambda.k(IPM.up$K)
-    
-    # calculate sensitivity
-    si = (lambda.up-lambda.true)/(1*delta) 
-    sens[i]=si 
-  }   
-  # calculate elasticity: do I have to ca
-  elas = sens*abs(params[vital.rate])/lambda.true; names(elas) = vital.rate
-  
-  return(list(sensitivty = sens, elastivity = elas))
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to perform life-table response experiment, LTRE ----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ltre <- function(vital.rate, params.ctl, lambda.ctl, params.trt, lambda.trt, params.ref, lambda.ref, sensitivity.ref=NA, ...) {
-  # params.ctl: vital rates of control IPM (only one as reference level)
-  # params.trt: vital rates of treatment IPMs (can be more than 1, then each row is a unique treatment)
-  # params.ref: vital rates of reference IPM (can be calcuate as the mean of control and treatment IPMs)
-  # lambda.ctl, lambda.trt, lambda.mean: lambdas of control, treatment and mean-IPM
-  # vital.rates: vital rates of interest (of which calculate sensitivity and elastivity)
-  
-  # sensitivity of mean-kernel
-  if(sum(is.na(sensitivity.ref[vital.rate])) != 0) {
-    print("calculate sensitivity of the reference IPM")
-    elas.vr <- elasticity.par(params = params.ref, lambda.true = lambda.ref, vital.rate = vital.rate, ...)
-    sens.mean <- elas.vr$sensitivity
-  }
-  else sens.mean <- sensitivity.ref
-  
-  # number of vital rate parameters
-  npar <- length(vital.rate)
-  
-  # number of treatments
-  ntrt <- nrow(params.ctl)
-  
-  # matrix to hold LTRE for each treatment IPM
-  LTRE <- matrix(NA, nrow=ntrt, ncol=npar + 2)
-  for(i in 1:ntrt) {
-    # parameter differences between control and treatment
-    par.dif <- params.trt[vital.rate] - params.ctl[vital.rate]
-    # LTRE of parameters
-    ltre.i <- sens.mean * par.dif
-    # combine LTRE, lambda difference, and LTRE sum
-    LTRE[i,] <- c(as.numeric(ltre.i[1,]), lambda.trt[i] - lambda.ctl, sum(ltre.i))
-  }
-  colnames(LTRE) <- c(vital.rate, "dif.lambda", "sum.ltre")
-  
-  return(list(LTRE=LTRE, sensitivity.reference=sens.mean))
-}
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Function to standardise contributions of vital rates ----
-# This standardisation makes relative contribution compaable across species
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ltre.standardise <- function(x) {
-  # x: a vector of relative contribution, including positive and negtaive values, of vital rates to be standardised
-  
-  # Check if NA in x
-  if(sum(is.na(x)) >0) warning("NAs in the relative contribution!")
-  
-  # standardisation
-  x.positive <- abs(x)
-  x.sum <- sum(x.positive)
-  x.divided <- x.positive/x.sum
-  x.standard <- ifelse(x< 0, (x.divided*-1), x.divided)
-  
-  return(x.standard)
-}
-
-# test
-ltre.standardise(c(-1,1,2,-2))
 
 #************************************************************
 # ****** Functions for coexistence analyses ******----
